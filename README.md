@@ -1,7 +1,7 @@
 # sysunicorns_infra_melanie
 Configuration and Setup of "melanie" server
 
-
+# Initial Setup
 ```bash
 # Update the repo list content
 sudo apt-get update
@@ -19,5 +19,21 @@ https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a
 https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key
 # Clone of Melanie repo
 git clone git@github.com:DeerHide/sysunicorns_infra_melanie.git
+
+```
+
+# Vagrant Install
+```bash
+# 
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+sudo apt update && sudo apt install vagrant
+# 
+https://developer.hashicorp.com/vagrant/docs/other/wsl
+
+# Validate the Vagrantfile
+vagrant validate
 
 ```
