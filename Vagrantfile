@@ -5,10 +5,10 @@ Vagrant.configure("2") do |config|
     # ...
     config.vm.box = "generic/ubuntu2204"
     config.vm.provider "virtualbox"
-    config.vm.network "public_network"
-    config.vm.synced_folder '.', '/vagrant', disabled: true
-    config.vm.provider "virtualbox" do |v|
-        v.gui = true
+    config.vm.provider "virtualbox" do |vb|
+        vb.memory = "4096"
+        vb.cpus = 4
+        vb.name = "melanie-dev"
     end  
     config.vm.define "melanie-dev" do |node|
     end

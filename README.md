@@ -46,4 +46,7 @@ https://developer.hashicorp.com/vagrant/docs/other/wsl
 # Validate the Vagrantfile
 vagrant validate
 
+# Install plugin vagrant for virtualbox WSL
+vagrant plugin install virtualbox_WSL2
+
 ```
