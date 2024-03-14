@@ -1,0 +1,29 @@
+- name: Create deerhide-operator group
+  group:
+    name: deerhide-operator
+    state: present
+  become: yes
+
+- name: Create deerhide-operator user
+  user:
+    name: deerhide-operator
+    group: deerhide-operator
+    state: present
+    shell: /bin/bash
+    home: /home/deerhide-operator
+    createhome: yes
+  become: yes
+
+- name: Create deerhide-operator dedicated user
+  user:
+    name: "deerhide-operator-{{ item }}"
+    group: deerhide-operator
+    state: present
+    shell: /bin/bash
+    home: /home/deerhide-operator-{{ item }}
+    createhome: yes
+  become: yes
+  with_items:
+    - "tom4897"
+    - "miragecentury"
+    - "nakou"
