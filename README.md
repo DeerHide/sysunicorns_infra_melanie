@@ -50,3 +50,11 @@ vagrant validate
 vagrant plugin install virtualbox_WSL2
 
 ```
+
+# Ansible install
+```bash
+
+# Install ansible
+https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
+
+```
