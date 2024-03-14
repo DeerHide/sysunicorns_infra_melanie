@@ -5,6 +5,8 @@ Vagrant.configure("2") do |config|
     # ...
     config.vm.box = "generic/ubuntu2204"
     config.vm.provider "virtualbox"
+    config.ssh.username = "deerhide-operator"
+    config.ssh.password = rand
     config.vm.provider "virtualbox" do |vb|
         vb.memory = "4096"
         vb.cpus = 4
