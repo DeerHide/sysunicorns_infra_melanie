@@ -29,7 +29,7 @@ git clone git@github.com:DeerHide/sysunicorns_infra_melanie.git
 
 ```
 
-# Vagrant Install
+# Vagrant Install (Ubuntu, Optional: WSL)
 ```bash
 # Download the signed key from web and decrypt the file
 wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
@@ -40,13 +40,13 @@ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://
 # Update the repositories list content and install vagrant
 sudo apt update && sudo apt install vagrant
 
-# Follow the link for granted access on windows features
+# (Optional - WSL Only) Follow the link for granted access on windows features
 https://developer.hashicorp.com/vagrant/docs/other/wsl
 
 # Validate the Vagrantfile
 vagrant validate
 
-# Install plugin vagrant for virtualbox WSL
+# (Optional - WSL Only) Install plugin vagrant for virtualbox and WSL Users
 vagrant plugin install virtualbox_WSL2
 
 ```
