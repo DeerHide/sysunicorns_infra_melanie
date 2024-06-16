@@ -7,7 +7,7 @@ Vagrant.configure("2") do |config|
     # It's like a vm snapshot
     config.vm.box = "generic/ubuntu2204"
     
-    # We use provider "virtualbox" to run the VM on much OS(s) as possible
+    # We use provider "virtualbox" v7.0.8 to run the VM on much OS(s) as possible
     config.vm.provider "virtualbox"
     
     # Due to the usage of "generic/ubuntu2204" box, the default user is "vagrant"
