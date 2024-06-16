@@ -1,3 +1,4 @@
+---
 - hosts:
   - melanie-dev
   vars:
