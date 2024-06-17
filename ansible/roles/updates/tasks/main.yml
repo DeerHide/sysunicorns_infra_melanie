@@ -1,1 +1,1 @@
-- include: manual.yml
+- include_tasks: manual.yml
