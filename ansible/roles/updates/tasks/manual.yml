@@ -10,27 +10,27 @@
     cache_valid_time: 3600 # 1h
   become: true
 
-- name: Update all packages # apt-get upgrade
+- name: Updating all packages # apt-get upgrade
   ansible.builtin.apt:
     name: "*"
     state: latest
   become: true
 
-- name: Upgrade the OS # apt-get dist-upgrade
+- name: Upgrading the OS # apt-get dist-upgrade
   ansible.builtin.apt:
     upgrade: dist
   become: true
 
-- name: Clean old packages # apt-get clean
+- name: Cleaning old packages # apt-get clean
   ansible.builtin.apt:
     autoclean: yes
   become: true
 
-- name: Check for reboot
+- name: Checking for reboot
   register: reboot_required_file
   ansible.builtin.stat: path=/var/run/reboot-required get_md5=no
 
-- name: Reboot if needed 
+- name: Rebooting if needed 
   ansible.builtin.reboot: # Error with msg: "Text" for vagrant use
     connect_timeout: 5
     reboot_timeout: 300 # 5mn
