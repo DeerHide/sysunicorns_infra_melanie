@@ -1,1 +1,2 @@
 - include_tasks: manual.yml
+- include_tasks: setup_auto.yml
