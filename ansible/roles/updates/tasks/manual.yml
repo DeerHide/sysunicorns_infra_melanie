@@ -1,36 +1,36 @@
 ---
-# List of all module used
+# [Doc] List of all module used
 # Apt "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html"
 # Stats "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/stat_module.html"
 # Reboot "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/reboot_module.html"
 
-- name: Run the equivalent of "apt-get update" as a separate step
+- name: Updating packages list # apt-get update
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600 # 1h
   become: true
 
-- name: Update all packages to their latest version apt-get upgrade
+- name: Update all packages # apt-get upgrade
   ansible.builtin.apt:
     name: "*"
     state: latest
   become: true
 
-- name: Upgrade the OS (apt-get dist-upgrade)
+- name: Upgrade the OS # apt-get dist-upgrade
   ansible.builtin.apt:
     upgrade: dist
   become: true
 
-- name: Run the equivalent of "apt-get clean" as a separate step
+- name: Clean old packages # apt-get clean
   ansible.builtin.apt:
     autoclean: yes
   become: true
 
-- name: Check if a reboot is needed on Ubuntu/Debian based servers
+- name: Check for reboot
   register: reboot_required_file
   ansible.builtin.stat: path=/var/run/reboot-required get_md5=no
 
-- name: Reboot the box if kernel updated/installed 
+- name: Reboot if needed 
   ansible.builtin.reboot: # Error with msg: "Text" for vagrant use
     connect_timeout: 5
     reboot_timeout: 300 # 5mn
