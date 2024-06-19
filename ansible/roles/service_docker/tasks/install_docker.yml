@@ -1,0 +1,66 @@
+---
+# [Doc] List of all module used
+# Apt https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+# File https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+# Get_Url https://docs.ansible.com/ansible/latest/collections/ansible/builtin/get_url_module.html
+# Command https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+# Shell https://docs.ansible.com/ansible/latest/collections/ansible/builtin/shell_module.html
+# Template https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+
+- name: Install pre-requisite package for docker
+  ansible.builtin.apt:
+    pkg: 
+    - ca-certificates
+    - curl
+    state: latest
+    update_cache: yes
+  become: true
+
+- name: Create the keyrings directory
+  ansible.builtin.file:
+    path: /etc/atp/keyrings
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Add GPG key to the keyrings
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+  become: true
+
+- name: Update permissions on file docker.asc
+  ansible.builtin.file:
+    path: /etc/apt/keyrings/docker.asc
+    mode: a+r
+  become: true
+
+- name: Found and register "arch"
+  ansible.builtin.command: 
+    cmd: dpkg --print-architecture
+  become: true
+  register: archi
+
+- name: Found and register "$VERSION_CODENAME"
+  ansible.builtin.shell: 
+    cmd: ". /etc/os-release && echo ${VERSION_CODENAME}"
+  become: true
+  register: version_codename
+
+- name: Add repository to Apt sources
+  ansible.builtin.template:
+    src: templates/docker.list.j2
+    dest: /etc/apt/sources.list.d/docker.list
+  become: true
+
+- name: Install docker
+  ansible.builtin.apt:
+    pkg:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-buildx-plugin
+    - docker-compose-plugin
+    state: latest
+    update_cache: yes
+  become: true
