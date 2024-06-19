@@ -15,10 +15,15 @@ Vagrant.configure("2") do |config|
     config.ssh.username = "vagrant"
 
 
+    # https://www.virtualbox.org/manual/ch08.html
     config.vm.provider "virtualbox" do |vb|
         vb.memory = "4096"
         vb.cpus = 4
         vb.name = "melanie-dev"
+        vb.customize ["modifyvm", :id, "--vrde", "off"]
+        vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
+        vb.customize ["modifyvm", :id, "--paravirt-provider", "hyperv"]
+        vb.customize ["modifyvm", :id, "--accelerate-3d", "on"]
     end  
     
     config.vm.define "melanie-dev" do |node|
