@@ -1,20 +1,21 @@
 ---
 # [Doc] List of module used
-# Copy https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
+# Copy "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html"
+# Apt "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html"
+
 - name: Install "unattended-upgrades"
   ansible.builtin.apt:
     name: "unattended-upgrades"
     state: latest
   become: true
 
-
-- name: Copy "50unattended-upgrades"
+- name: Deploy unattended-upgrades config
   ansible.builtin.copy:
     src: files/50unattended-upgrades
     dest: /etc/apt/apt.conf.d/50unattended-upgrades
   become: true
 
-- name: Copy "20auto-upgrades"
+- name: Deploy unattended-upgrades schedule config
   ansible.builtin.copy:
     src: files/20auto-upgrades
     dest: /etc/apt/apt.conf.d/20auto-upgrades
