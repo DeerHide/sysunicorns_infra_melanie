@@ -2,7 +2,7 @@
   group:
     name: deerhide-operator
     state: present
-  become: yes
+  become: true
 
 - name: Create deerhide-operator user
   user:
@@ -11,8 +11,8 @@
     state: present
     shell: /bin/bash
     home: /home/deerhide-operator
-    createhome: yes
-  become: yes
+    createhome: true
+  become: true
 
 - name: Create deerhide-operator dedicated user
   user:
@@ -21,8 +21,8 @@
     state: present
     shell: /bin/bash
     home: /home/deerhide-operator-{{ item }}
-    createhome: yes
-  become: yes
+    createhome: true
+  become: true
   with_items:
     - "tom4897"
     - "miragecentury"
