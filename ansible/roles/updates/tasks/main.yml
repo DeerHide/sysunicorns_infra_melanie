@@ -1,2 +1,4 @@
-- include_tasks: manual.yml
+# Remove manual to prevent update for testing auto-update
+# - include_tasks: manual.yml
 - include_tasks: setup_auto.yml
+- include_tasks: setup_notif.yml
