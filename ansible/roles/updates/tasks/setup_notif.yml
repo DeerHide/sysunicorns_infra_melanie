@@ -3,6 +3,7 @@
 # Templates "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html"
 # Service "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/service_module.html"
 # File "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html"
+# Copy "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html"
 
 - name: Create deerhide-notifications user
   user:
@@ -21,32 +22,32 @@
   become: true
 
 - name: Deploy postfix config
-  ansible.builtin.template:
-    src: templates/main.cf.j2
+  ansible.builtin.copy:
+    src: files/main.cf
     dest: /etc/postfix/main.cf
   become: true
-  register: postfixconfig
+  register: postfix_config
 
 - name: Restart postfix service
   ansible.builtin.service:
     name: postfix
     state: restarted
   become: true
-  when: postfixconfig.changed
+  when: postfix_config.changed
 
 - name: Deploy aliases config
   ansible.builtin.copy:
     src: files/aliases
     dest: /etc/aliases
   become: true
-  register: aliases_copy
+  register: postfix_aliases
 
 - name: Update aliases file
   ansible.builtin.command: newaliases
   become: true
-  when: aliases_copy.changed
+  when: postfix_aliases.changed
 
-- name: Create script file
+- name: Create script directory
   ansible.builtin.file:
     path: /home/deerhide-notifications/bin
     state: directory
@@ -58,17 +59,16 @@
     dest: /home/deerhide-notifications/bin/notifyslack.sh
   become: true
 
-- name: Update owner for file
+- name: Update owner for directory and file
   ansible.builtin.file:
     owner: deerhide-notifications
     group: deerhide-notifications
     path: /home/deerhide-notifications/bin
+    recurse: yes
   become: true
 
-- name: Update owner for script
-  ansible.builtin.file: 
-    owner: deerhide-notifications
-    group: deerhide-notifications
+- name: Make script executable
+  ansible.builtin.file:
     path: /home/deerhide-notifications/bin/notifyslack.sh
     mode: +x
   become: true
