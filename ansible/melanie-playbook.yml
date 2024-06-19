@@ -1,0 +1,9 @@
+---
+- hosts:
+  - melanie
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  roles:
+    - role: updates
+    - role: service_docker
+    - role: deerhide_users
