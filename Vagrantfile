@@ -15,15 +15,25 @@ Vagrant.configure("2") do |config|
     config.ssh.username = "vagrant"
 
 
-    # https://www.virtualbox.org/manual/ch08.html
+    # Vagrant VM customization documentation: https://developer.hashicorp.com/vagrant/docs/providers/virtualbox/configuration
     config.vm.provider "virtualbox" do |vb|
-        vb.memory = "4096"
-        vb.cpus = 4
+        # VM name
         vb.name = "melanie-dev"
+        # meory capacity
+        vb.memory = "4096"
+        # CPU count
+        vb.cpus = 4
+        # VBox parameters for the customization: https://www.virtualbox.org/manual/ch08.html#vboxmanage-modifyvm
+        # virtual remote desktop extension (VRDE) is disabled
         vb.customize ["modifyvm", :id, "--vrde", "off"]
+        # enable nested virtualization
         vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
+        # forced Hyper-V paravirtualization provider
         vb.customize ["modifyvm", :id, "--paravirt-provider", "hyperv"]
+        # enable 3D acceleration
         vb.customize ["modifyvm", :id, "--accelerate-3d", "on"]
+        # graphics controller forced to vmsvga
+        vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
     end  
     
     config.vm.define "melanie-dev" do |node|
