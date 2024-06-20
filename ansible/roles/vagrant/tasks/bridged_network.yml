@@ -1,0 +1,17 @@
+---
+
+- name: Copy "netplan" file
+  ansible.builtin.copy:
+    src: files/02-eth1.yaml
+    dest: /etc/netplan/02-eth1.yaml
+  become: true
+
+- name: Apply netplan config
+  ansible.builtin.command: 
+    cmd: netplan apply
+  become: true
+
+- name: Up "eth1" network
+  ansible.builtin.command:
+    cmd: networkctl up eth1
+  become: true
