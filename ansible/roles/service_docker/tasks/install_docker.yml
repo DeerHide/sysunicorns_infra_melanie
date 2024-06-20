@@ -40,12 +40,14 @@
     cmd: dpkg --print-architecture
   become: true
   register: archi
+  changed_when: false
 
 - name: Found and register "$VERSION_CODENAME"
   ansible.builtin.shell: 
     cmd: ". /etc/os-release && echo ${VERSION_CODENAME}"
   become: true
   register: version_codename
+  changed_when: false
 
 - name: Add repository to Apt sources
   ansible.builtin.template:
@@ -64,9 +66,11 @@
     state: latest
     update_cache: yes
   become: true
+  register: install_docker
 
 - name: Restart docker service
   ansible.builtin.service:
     name: docker
     state: restarted
   become: true
+  when: install_docker.changed
