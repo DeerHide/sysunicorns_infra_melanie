@@ -2,8 +2,10 @@
 - hosts:
   - melanie-dev
   vars:
-    ansible_python_interpreter: /usr/bin/python3
+    ansible_python_interpreter: auto
   roles:
-    - role: updates
+    # This role manage vagrant specificity
+    - role: vagrant
+#    - role: updates
     - role: service_docker
-    - role: deerhide_users
+#    - role: deerhide_users
