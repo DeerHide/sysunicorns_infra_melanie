@@ -5,5 +5,6 @@ ANSIBLE_INVENTORY=.vagrant/provisioners/ansible/inventory/vagrant_ansible_invent
 
 # Launch ansible playbook
 ansible-playbook \
+    -vvvv \
     -i ${ANSIBLE_INVENTORY} \
     ./ansible/vagrant-playbook.yml

@@ -14,6 +14,7 @@ Vagrant.configure("2") do |config|
     # For the box, the username and password are "vagrant"
     config.ssh.username = "vagrant"
 
+    config.vm.network "public_network", type: "dhcp", adapter: 2
 
     # Vagrant VM customization documentation: https://developer.hashicorp.com/vagrant/docs/providers/virtualbox/configuration
     config.vm.provider "virtualbox" do |vb|
