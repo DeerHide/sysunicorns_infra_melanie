@@ -6,7 +6,7 @@
     group: docker
   become: true
 
-- name: Copy "netplan" file
+- name: Apply network configuration for eth1
   ansible.builtin.copy:
     src: files/02-eth1.yaml
     dest: /etc/netplan/02-eth1.yaml
