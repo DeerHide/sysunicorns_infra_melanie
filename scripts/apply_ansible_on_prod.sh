@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ANSIBLE_INVENTORY=ansible/inventories
+ANSIBLE_INVENTORY=ansible/inventories/melanie.ini
 
 # Launch ansible playbook
 ansible-playbook \
