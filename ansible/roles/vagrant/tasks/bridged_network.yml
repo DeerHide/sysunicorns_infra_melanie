@@ -1,6 +1,12 @@
 ---
 
-- name: Apply config for eth1
+- name: Add owner to group
+  ansible.builtin.user:
+    name: vagrant
+    group: docker
+  become: true
+
+- name: Copy "netplan" file
   ansible.builtin.copy:
     src: files/02-eth1.yaml
     dest: /etc/netplan/02-eth1.yaml
