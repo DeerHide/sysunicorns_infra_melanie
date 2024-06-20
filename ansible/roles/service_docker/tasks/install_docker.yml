@@ -66,11 +66,25 @@
     state: latest
     update_cache: yes
   become: true
+<<<<<<< HEAD
   register: install_docker
+=======
+  register: docker_install
+>>>>>>> f7b3d39 (Add vagrant user to docker group)
 
 - name: Restart docker service
   ansible.builtin.service:
     name: docker
     state: restarted
   become: true
+<<<<<<< HEAD
   when: install_docker.changed
+=======
+  when: docker_install.changed
+
+- name: Create docker group
+  group:
+    name: docker
+    state: present
+  become: true
+>>>>>>> f7b3d39 (Add vagrant user to docker group)
