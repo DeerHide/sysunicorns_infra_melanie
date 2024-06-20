@@ -64,3 +64,9 @@
     state: latest
     update_cache: yes
   become: true
+
+- name: Restart docker service
+  ansible.builtin.service:
+    name: docker
+    state: restarted
+  become: true
