@@ -1,0 +1,14 @@
+---
+# code: language=ansible
+
+- name: Create docker group
+  ansible.builtin.group:
+    name: docker
+    state: present
+  become: true
+
+- name: Add owner to group
+  ansible.builtin.user:
+    name: vagrant
+    group: docker
+  become: true
