@@ -4,3 +4,5 @@
   ansible.builtin.include_tasks: install_docker.yml
 - name: Include setup_network.yml
   ansible.builtin.include_tasks: setup_network.yml
+- name: Include setup_volume.yml
+  ansible.builtin.include_tasks: setup_volume.yml
