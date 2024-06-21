@@ -1,11 +1,14 @@
+---
+# code: language=ansible
+
 - name: Create deerhide-operator group
-  group:
+  ansible.builtin.group:
     name: deerhide-operator
     state: present
   become: true
 
 - name: Create deerhide-operator user
-  user:
+  ansible.builtin.user:
     name: deerhide-operator
     group: deerhide-operator
     state: present
@@ -15,7 +18,7 @@
   become: true
 
 - name: Create deerhide-operator dedicated user
-  user:
+  ansible.builtin.user:
     name: "deerhide-operator-{{ item }}"
     group: deerhide-operator
     state: present

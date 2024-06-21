@@ -1,1 +1,7 @@
- - include_tasks: bridged_network.yml
+---
+ # code: language=ansible
+
+- name: Include docker.yml
+  ansible.builtin.include_tasks: docker.yml
+- name: Include bridged_network.yml
+  ansible.builtin.include_tasks: bridged_network.yml
