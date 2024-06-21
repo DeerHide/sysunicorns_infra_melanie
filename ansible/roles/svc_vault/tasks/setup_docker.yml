@@ -1,4 +1,5 @@
 ---
+# code: language=ansible
 - name: Pull the latest Vault image
   community.docker.docker_image_pull:
     name: hashicorp/vault
@@ -12,13 +13,12 @@
 
   # TODO: add a handler to notify through slack if the image was updated (pulled) with the version number
   # TODO: add a handler to restart the container if the image was updated (pulled)
-  
+
 - name: Create a directory for the Vault data
-  file:
+  ansible.builtin.file:
     name: "{{ docker_volumes_dir }}/{{ vault_data_dir_name }}"
     state: directory
-    mode: 0700
+    mode: "700"
     # TODO: set recurse to false when INFRA-14 is resolved
     recurse: true
   become: true
-
