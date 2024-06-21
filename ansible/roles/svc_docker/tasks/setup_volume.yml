@@ -1,0 +1,10 @@
+---
+# code: language=ansible
+# [Doc] List of all modules used
+
+- name: Create directory for docker volumes
+  ansible.builtin.file:
+    path: /var/docker_volumes
+    state: directory
+    mode: '0755'
+  become: true
