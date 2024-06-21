@@ -2,14 +2,14 @@ Vagrant.require_version ">= 2.4.1"
 
 
 Vagrant.configure("2") do |config|
-    
+
     # Use the "Vagrant" Ubuntu 22.04 box as a base image
     # It's like a VM snapshot
     config.vm.box = "generic/ubuntu2204"
-    
+
     # We use provider "VirtualBox" v7.0.8 to run the VM on much OS(s) as possible
     config.vm.provider "virtualbox"
-    
+
     # Due to the usage of a "generic/ubuntu2204" box, the default user is "vagrant"
     # For the box, the username and password are "vagrant"
     config.ssh.username = "vagrant"
@@ -27,8 +27,9 @@ Vagrant.configure("2") do |config|
         vb.customize ["modifyvm", :id, "--paravirt-provider", "hyperv"]
         vb.customize ["modifyvm", :id, "--accelerate-3d", "on"]
         vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
-    end  
-    
+        vb.customize ["modifyvm", :id, "--chipset", "ich9"]
+    end
+
     config.vm.define "melanie-dev" do |node|
     end
 
