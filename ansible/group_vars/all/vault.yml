@@ -1,1 +1,7 @@
+---
+# code: language=ansible
+# Path: ansible/group_vars/all/vault.yml
+# This file contains the variables for the Vault service
 vault_data_dir_name: svc_vault_data
+vault_data_dir: "{{ docker_volumes_dir }}/{{ vault_data_dir_name }}"
+vault_docker_volume_name: svc_vault_data_volume
