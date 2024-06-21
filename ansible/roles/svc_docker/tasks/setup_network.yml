@@ -1,0 +1,37 @@
+---
+# code: language=ansible
+# [Doc] List of all modules used
+# Docker_network https://docs.ansible.com/ansible/2.9/modules/docker_network_module.html
+
+- name: Install pip package
+  ansible.builtin.apt:
+    name: "python3-pip"
+    update_cache: true
+  become: true
+
+- name: Install docker/docker-compose pip
+  ansible.builtin.pip:
+    name:
+      - docker
+      - docker-compose
+  become: true
+
+- name: Create Private network
+  community.docker.docker_network:
+    name: private_docker_network
+    state: present
+    internal: true
+    ipam_config:
+      - subnet: 172.16.20.0/24
+        gateway: 172.16.20.1
+  become: true
+
+- name: Create Public network
+  community.docker.docker_network:
+    name: public_docker_network
+    state: present
+    internal: false
+    ipam_config:
+      - subnet: 172.16.100.0/24
+        gateway: 172.16.100.1
+  become: true
