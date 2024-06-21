@@ -1,23 +1,12 @@
 ---
-
-- name: Add owner to group
-  ansible.builtin.user:
-    name: vagrant
-    group: docker
-  become: true
+# code: language=ansible
 
 - name: Apply network configuration for eth1
   ansible.builtin.copy:
     src: files/02-eth1.yaml
     dest: /etc/netplan/02-eth1.yaml
+    mode: '0644'
   become: true
-
-- name: Apply netplan config
-  ansible.builtin.command: 
-    cmd: netplan apply
-  become: true
-
-- name: Enable eth1
-  ansible.builtin.command:
-    cmd: networkctl up eth1
-  become: true
+  notify:
+    - Apply netplan config
+    - Enable eth1

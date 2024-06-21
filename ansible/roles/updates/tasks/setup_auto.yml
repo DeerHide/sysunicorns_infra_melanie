@@ -1,4 +1,5 @@
 ---
+# code: language=ansible
 # [Doc] List of module used
 # Copy "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html"
 # Apt "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html"
@@ -13,10 +14,12 @@
   ansible.builtin.copy:
     src: files/50unattended-upgrades
     dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    mode: '0644'
   become: true
 
 - name: Deploy unattended-upgrades schedule config
   ansible.builtin.copy:
     src: files/20auto-upgrades
     dest: /etc/apt/apt.conf.d/20auto-upgrades
+    mode: '0644'
   become: true
