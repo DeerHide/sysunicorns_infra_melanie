@@ -1,0 +1,8 @@
+---
+# code: language=ansible
+
+- name: Restart docker service
+  ansible.builtin.service:
+    name: docker
+    state: restarted
+  become: true

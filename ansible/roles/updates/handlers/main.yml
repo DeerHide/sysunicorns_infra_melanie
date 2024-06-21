@@ -1,0 +1,15 @@
+---
+# code: language=ansible
+
+- name: Restart postfix service
+  ansible.builtin.service:
+    name: postfix
+    state: restarted
+  become: true
+  changed_when: false
+
+- name: Update aliases file
+  ansible.builtin.command:
+    cmd: newaliases
+  become: true
+  changed_when: false

@@ -1,0 +1,14 @@
+---
+# code: language=ansible
+
+- name: Apply netplan config
+  ansible.builtin.command:
+    cmd: netplan apply
+  become: true
+  changed_when: false
+
+- name: Enable eth1
+  ansible.builtin.command:
+    cmd: networkctl up eth1
+  become: true
+  changed_when: false
