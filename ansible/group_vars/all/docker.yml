@@ -1,1 +1,2 @@
 docker_registry_hostname: registry.hub.docker.com
+docker_volumes_dir: /var/docker_volumes
