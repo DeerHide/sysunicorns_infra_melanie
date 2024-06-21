@@ -1,5 +1,7 @@
 ---
 # code: language=ansible
+# Path: ansible/roles/svc_vault/tasks/setup_docker.yml
+# This file contains the tasks to setup the Docker container for Vault
 - name: Pull the latest Vault image
   community.docker.docker_image_pull:
     name: hashicorp/vault
@@ -16,9 +18,19 @@
 
 - name: Create a directory for the Vault data
   ansible.builtin.file:
-    name: "{{ docker_volumes_dir }}/{{ vault_data_dir_name }}"
+    name: "{{ vault_data_dir }}"
     state: directory
     mode: "700"
     # TODO: set recurse to false when INFRA-14 is resolved
     recurse: true
+  become: true
+
+- name: Create docker_volume for Vault data
+  community.docker.docker_volume:
+    name: "{{ vault_docker_volume_name }}"
+    driver: local
+    driver_options:
+      type: "bind"
+      device: "{{ vault_data_dir }}"
+    state: present
   become: true
