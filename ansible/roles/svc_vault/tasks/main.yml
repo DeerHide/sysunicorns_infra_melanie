@@ -1,3 +1,4 @@
 ---
-
-- include_tasks: pre_install_docker.yml
+# code: language=ansible
+- name: Include tasks from setup_docker.yml
+  ansible.builtin.include_tasks: setup_docker.yml
