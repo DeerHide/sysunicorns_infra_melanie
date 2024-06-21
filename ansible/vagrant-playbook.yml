@@ -7,5 +7,5 @@
     # This role manage vagrant specificity
     - role: vagrant
     - role: updates
-    - role: service_docker
+    - role: svc_docker
     - role: deerhide_users
