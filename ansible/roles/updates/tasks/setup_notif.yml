@@ -18,7 +18,7 @@
 - name: Install "postfix" # Do "apt-get update" before installing postfix
   ansible.builtin.apt:
     name: postfix
-    state: present
+    state: latest
     update_cache: true
   become: true
 
@@ -59,6 +59,7 @@
     owner: deerhide-notifications
     group: deerhide-notifications
     path: /home/deerhide-notifications/bin
+    state: directory
     recurse: true
   become: true
 
