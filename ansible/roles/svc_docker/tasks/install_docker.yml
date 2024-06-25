@@ -77,3 +77,10 @@
     name: docker
     state: present
   become: true
+
+- name: Ensure docker service is started
+  ansible.builtin.service:
+    name: docker.service
+    enabled: true
+    state: started
+  become: true
