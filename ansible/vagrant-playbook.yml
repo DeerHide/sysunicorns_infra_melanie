@@ -11,5 +11,4 @@
     - role: updates
     - role: svc_docker
     - role: svc_traefik
-    - role: svc_vault
     - role: deerhide_users
