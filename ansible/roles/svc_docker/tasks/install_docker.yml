@@ -13,7 +13,7 @@
     pkg:
       - ca-certificates
       - curl
-    state: latest
+    state: latest # noqa: package-latest
     update_cache: true
   become: true
 
