@@ -13,7 +13,7 @@ SSH_PORT=22
 
 
 function setup_dot_ssh(){
-    mkdir -p $HOME/.ssh 
+    mkdir -p $HOME/.ssh
     chmod 0700 $HOME/.ssh
 }
 
@@ -29,7 +29,7 @@ function generate_identity(){
         else
             echo "Stopped"
             exit -1
-        fi        
+        fi
     fi
 
     # Generate ssh identity
@@ -37,7 +37,7 @@ function generate_identity(){
         -t ${SSH_IDENTITY_ALGO} \
         -b ${SSH_IDENTITY_BITS} \
         -f ${SSH_IDENTITY_FILE_PATH}
-    
+
 }
 
 function deploy_identity(){

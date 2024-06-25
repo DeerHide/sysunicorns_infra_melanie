@@ -18,4 +18,3 @@ usermod -Ga admin deerhide-operator
 ```
 deerhide-operator ALL=(ALL) NOPASSWD: ALL
 ```
-
