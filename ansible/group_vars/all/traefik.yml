@@ -4,4 +4,7 @@
 # This file contains the variables for the Traefik service
 traefik_data_dir_name: svc_traefik_data
 traefik_data_dir: "{{ docker_volumes_dir }}/{{ traefik_data_dir_name }}"
+traefik_docker_image_name: docker.io/traefik
+traefik_docker_image_version: 3.0
 traefik_docker_volume_name: svc_traefik_data_volume
+traefik_ip: 172.16.100.10
