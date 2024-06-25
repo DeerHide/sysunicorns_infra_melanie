@@ -29,4 +29,3 @@
       device: "{{ minio_data_dir }}"
     state: present
   become: true
-  
