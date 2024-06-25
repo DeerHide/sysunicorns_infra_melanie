@@ -1,6 +1,8 @@
 ---
-- hosts:
-  - melanie-dev
+# code: language=ansible
+- name: Melanie-dev's playbook
+  hosts:
+    - melanie-dev
   vars:
     ansible_python_interpreter: auto
   roles:
@@ -8,4 +10,6 @@
     - role: vagrant
     - role: updates
     - role: svc_docker
+    - role: svc_traefik
+    - role: svc_vault
     - role: deerhide_users
