@@ -1,0 +1,29 @@
+---
+# code: language=ansible
+- name: Melanie's playbook
+  hosts:
+    - melanie
+  roles:
+    - role: svc_docker
+    - role: deerhide_users
+
+- name: Rasp's playbook
+  hosts:
+    - rasp
+  roles:
+    - role: svc_docker
+    - role: deerhide_users
+
+- name: Rasp's v3 playbook
+  hosts:
+    - rasp3
+  roles:
+    - role: svc_docker
+    - role: deerhide_users
+
+- name: Rasp's v4 playbook
+  hosts:
+    - rasp4
+  roles:
+    - role: svc_docker
+    - role: deerhide_users

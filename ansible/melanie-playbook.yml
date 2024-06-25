@@ -1,8 +1,0 @@
----
-# code: language=ansible
-- name: Melanie's playbook
-  hosts:
-    - melanie
-  roles:
-    - role: svc_docker
-    - role: deerhide_users
