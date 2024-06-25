@@ -1,0 +1,8 @@
+---
+# code: language=ansible
+# Path: ansible/group_vars/all/minio.yml
+# This file contains the variables for the Minio service
+minio_data_dir_name: svc_minio_data
+minio_data_dir: "{{ docker_volumes_dir }}/{{ minio_data_dir_name }}"
+minio_docker_image_name: min.io/minio
+minio_docker_volume_name: svc_minio_data_volume
