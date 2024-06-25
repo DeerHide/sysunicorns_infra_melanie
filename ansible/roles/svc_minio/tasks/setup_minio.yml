@@ -19,3 +19,13 @@
     mode: "700"
     recurse: true
   become: true
+
+- name: Create docker_volume for Minio data
+  community.docker.docker_volume:
+    name: "{{ minio_docker_volume_name }}"
+    driver: local
+    driver_options:
+      type: "bind"
+      device: "{{ minio_data_dir }}"
+    state: present
+  become: true
