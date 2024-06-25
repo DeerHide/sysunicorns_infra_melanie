@@ -4,8 +4,8 @@
 # This file contains the tasks to setup the Docker container for Traefik
 - name: Pull traefik image
   community.docker.docker_image_pull:
-    name: docker.io/traefik
-    tag: latest
+    name: "{{ traefik_docker_image_name }}"
+    tag: "{{ traefik_docker_image_version }}"
     pull: always
     timeout: 10
     tls: true
@@ -18,6 +18,13 @@
     state: directory
     mode: "700"
     recurse: true
+  become: true
+
+- name: Deploy Traefik Configuration to Host
+  ansible.builtin.template:
+    src: traefik.yml.j2
+    dest: "{{ traefik_data_dir }}/traefik.yml"
+    mode: "600"
   become: true
 
 - name: Create docker_volume for Traefik data
@@ -33,12 +40,24 @@
 - name: Create a container
   community.docker.docker_container:
     name: svc_traefik
-    image: docker.io/traefik:latest
-    state: present
+    image: "{{ traefik_docker_image_name }}:{{ traefik_docker_image_version }}"
+    state: started
+    restart_policy: always
+    entrypoint:
+      - /usr/local/bin/traefik
+    command: --configFile=/etc/traefik/traefik.yml
     exposed_ports:
       - 80
       - 443
       - 8080
+    ports:
+      - "127.0.0.1:80:80"
+      - "127.0.0.1:443:443"
+      - "127.0.0.1:8080:8080"
     networks:
       - name: "{{ docker_network_public }}"
+        ipv4_address: "{{ traefik_ip }}"
+    volumes:
+      - "{{ traefik_data_dir }}/traefik.yml:/etc/traefik/traefik.yml"
+    recreate: true
   become: true
