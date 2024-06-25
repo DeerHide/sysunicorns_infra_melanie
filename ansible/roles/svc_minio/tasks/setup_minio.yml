@@ -1,6 +1,6 @@
 ---
 # code: language=ansible
-# Path: ansible/roles/svc_traefik/tasks/setup_minio.yml
+# Path: ansible/roles/svc_minio/tasks/setup_minio.yml
 # This file contains the tasks to setup the Docker container for Minio
 - name: Pull minio image
   community.docker.docker_image_pull:
@@ -10,4 +10,12 @@
     timeout: 10
     tls: true
     tls_hostname: "{{ docker_registry_hostname }}"
+  become: true
+
+- name: Create directory for minio
+  ansible.builtin.file:
+    name: "{{ minio_data_dir }}"
+    state: directory
+    mode: "700"
+    recurse: true
   become: true
