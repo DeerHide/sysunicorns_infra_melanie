@@ -5,6 +5,7 @@
     - melanie
   roles:
     - role: svc_docker
+    - role: svc_traefik
     - role: deerhide_users
 
 - name: Rasp's playbook

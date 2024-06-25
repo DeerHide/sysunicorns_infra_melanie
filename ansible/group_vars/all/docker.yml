@@ -4,3 +4,4 @@
 # This file contains the variables for the Docker service
 docker_registry_hostname: registry.hub.docker.com
 docker_volumes_dir: /var/docker_volumes
+docker_network_public: public_docker_network
