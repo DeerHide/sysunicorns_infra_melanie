@@ -1,0 +1,7 @@
+---
+# code: language=ansible
+# Path: ansible/group_vars/all/traefik.yml
+# This file contains the variables for the Traefik service
+traefik_data_dir_name: svc_traefik_data
+traefik_data_dir: "{{ docker_volumes_dir }}/{{ traefik_data_dir_name }}"
+traefik_docker_volume_name: svc_traefik_data_volume
