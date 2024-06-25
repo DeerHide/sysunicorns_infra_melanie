@@ -29,3 +29,16 @@
       device: "{{ traefik_data_dir }}"
     state: present
   become: true
+
+- name: Create a container
+  community.docker.docker_container:
+    name: svc_traefik
+    image: docker.io/traefik:latest
+    state: present
+    exposed_ports:
+      - 80
+      - 443
+      - 8080
+    networks:
+      - name: "{{ docker_network_public }}"
+  become: true
