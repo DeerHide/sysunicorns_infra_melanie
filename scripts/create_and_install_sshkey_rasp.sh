@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -exuo pipefail
 
 SSH_IDENTITY_ALGO=ed25519
 SSH_IDENTITY_BITS=4096
@@ -11,7 +11,7 @@ SSH_USER=deerhide-operator
 SSH_HOSTNAME=rasp-00.localunicorns.info
 SSH_PORT=22
 
-SSH_HOSTNAME_RASP_DIGIT=("01" "02")
+SSH_HOSTNAME_RASP_DIGIT=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10")
 # "01" "02" "03" "04" "05" "06" "07" "08" "09" "10"
 
 
@@ -88,10 +88,16 @@ EOF
 
 }
 
-function clean_known_hosts(){
+function clean_known_host(){
     local rasp_hostname=$1
     # Remove the entry from known_hosts
     ssh-keygen -R ${rasp_hostname}
+}
+
+function add_known_host(){
+    local rasp_hostname=$1
+    # Add known host to all machine
+    ssh-keyscan ${rasp_hostname} >> ~/.ssh/known_hosts
 }
 
 function main(){
@@ -111,7 +117,8 @@ function main(){
         rasp_hostname="rasp-${rasp_digit}.localunicorns.info"
         deploy_ssh_config ${rasp_hostname}
         deploy_identity ${rasp_hostname} ${rasp_password}
-        clean_known_hosts ${rasp_hostname}
+        clean_known_host ${rasp_hostname}
+        add_known_host ${rasp_hostname}
     done
 }
 
