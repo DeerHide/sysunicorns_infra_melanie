@@ -14,7 +14,7 @@
 - name: Updating all packages # apt-get upgrade
   ansible.builtin.apt:
     name: "*"
-    state: latest
+    state: latest # noqa: package-latest
   become: true
 
 - name: Upgrading the OS # apt-get dist-upgrade

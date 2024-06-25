@@ -18,7 +18,7 @@
 - name: Install "postfix" # Do "apt-get update" before installing postfix
   ansible.builtin.apt:
     name: postfix
-    state: latest
+    state: latest # noqa: package-latest
     update_cache: true
   become: true
 
