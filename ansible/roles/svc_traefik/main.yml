@@ -1,0 +1,4 @@
+---
+# code: language=ansible
+- name: Include tasks from setup_traefik.yml
+  ansible.builtin.include_tasks: setup_traefik.yml
