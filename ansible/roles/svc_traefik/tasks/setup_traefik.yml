@@ -1,0 +1,31 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_traefik/tasks/setup_traefik.yml
+# This file contains the tasks to setup the Docker container for Traefik
+- name: Pull traefik image
+  community.docker.docker_image_pull:
+    name: docker.io/traefik
+    tag: latest
+    pull: always
+    timeout: 10
+    tls: true
+    tls_hostname: "{{ docker_registry_hostname }}"
+  become: true
+
+- name: Create directory for traefik
+  ansible.builtin.file:
+    name: "{{ traefik_data_dir }}"
+    state: directory
+    mode: "700"
+    recurse: true
+  become: true
+
+- name: Create docker_volume for Traefik data
+  community.docker.docker_volume:
+    name: "{{ traefik_docker_volume_name }}"
+    driver: local
+    driver_options:
+      type: "bind"
+      device: "{{ traefik_data_dir }}"
+    state: present
+  become: true
