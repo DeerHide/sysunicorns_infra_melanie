@@ -4,5 +4,7 @@
 # This file contains the variables for the Minio service
 minio_data_dir_name: svc_minio_data
 minio_data_dir: "{{ docker_volumes_dir }}/{{ minio_data_dir_name }}"
-minio_docker_image_name: min.io/minio
+minio_docker_image_name: minio/minio
+minio_docker_image_version: latest
 minio_docker_volume_name: svc_minio_data_volume
+minio_ip: 172.16.20.10
