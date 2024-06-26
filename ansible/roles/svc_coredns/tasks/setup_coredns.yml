@@ -11,3 +11,21 @@
     tls: true
     tls_hostname: "{{ docker_registry_hostname }}"
   become: true
+
+- name: Create directory for coredns
+  ansible.builtin.file:
+    name: "{{ coredns_data_dir }}"
+    state: directory
+    mode: "700"
+    recurse: true
+  become: true
+
+- name: Create docker_volume for CoreDNS data
+  community.docker.docker_volume:
+    name: "{{ coredns_docker_volume_name }}"
+    driver: local
+    driver_options:
+      type: "bind"
+      device: "{{ coredns_data_dir }}"
+    state: present
+  become: true
