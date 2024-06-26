@@ -29,3 +29,27 @@
       device: "{{ minio_data_dir }}"
     state: present
   become: true
+
+- name: Create a Minio container
+  community.docker.docker_container:
+    name: svc_minio
+    image: "{{ minio_docker_image_name }}:{{ minio_docker_image_version }}"
+    state: started
+    restart_policy: always
+    command: server /data --console-address ":9001"
+    exposed_ports:
+      - 9000
+      - 9001
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    networks:
+      - name: "{{ docker_network_private }}"
+        ipv4_address: "{{ minio_ip }}"
+    env:
+      MINIO_ROOT_USER: 'root'
+      MINIO_ROOT_PASSWORD: 'rootgroot'
+    volumes:
+      - "{{ minio_data_dir }}:/data"
+    recreate: true
+  become: true
