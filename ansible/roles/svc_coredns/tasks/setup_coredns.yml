@@ -29,3 +29,18 @@
       device: "{{ coredns_data_dir }}"
     state: present
   become: true
+
+- name: Create a CoreDNS container
+  community.docker.docker_container:
+    name: svc_coredns
+    image: "{{ coredns_docker_image_name }}:{{ coredns_docker_image_version }}"
+    state: started
+    restart_policy: always
+    exposed_ports:
+      - 53
+    ports:
+      - "127.0.0.1:53:53"
+    volumes:
+      - "{{ coredns_data_dir }}:/data"
+    recreate: true
+  become: true
