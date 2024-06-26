@@ -20,7 +20,7 @@
   community.docker.docker_network:
     name: private_docker_network
     state: present
-    internal: true
+    internal: false
     ipam_config:
       - subnet: 172.16.20.0/24
         gateway: 172.16.20.1
