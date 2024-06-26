@@ -1,0 +1,4 @@
+---
+# code: language=ansible
+- name: Include tasks from setup_coredns.yml
+  ansible.builtin.include_tasks: setup_coredns.yml
