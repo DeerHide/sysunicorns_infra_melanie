@@ -20,6 +20,13 @@
     recurse: true
   become: true
 
+- name: Deploy CoreDNS Configuration to Host
+  ansible.builtin.template:
+    src: Corefile.j2
+    dest: "{{ coredns_data_dir }}/Corefile"
+    mode: "600"
+  become: true
+
 - name: Create docker_volume for CoreDNS data
   community.docker.docker_volume:
     name: "{{ coredns_docker_volume_name }}"
