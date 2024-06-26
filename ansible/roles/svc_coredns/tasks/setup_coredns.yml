@@ -1,0 +1,13 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_coredns/tasks/setup_coredns.yml
+# This file contains the tasks to setup the Docker container for CoreDNS
+- name: Pull coredns image
+  community.docker.docker_image_pull:
+    name: "{{ coredns_docker_image_name }}"
+    tag: "{{ coredns_docker_image_version }}"
+    pull: always
+    timeout: 10
+    tls: true
+    tls_hostname: "{{ docker_registry_hostname }}"
+  become: true

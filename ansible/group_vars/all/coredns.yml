@@ -1,0 +1,9 @@
+---
+# code: language=ansible
+# Path: ansible/group_vars/all/coredns.yml
+# This file contains the variables for the CoreDNS service
+coredns_data_dir_name: svc_coredns_data
+coredns_data_dir: "{{ docker_volumes_dir }}/{{ coredns_data_dir_name }}"
+coredns_docker_image_name: coredns/coredns
+coredns_docker_image_version: latest
+coredns_docker_volume_name: svc_coredns_data_volume
