@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "redhat.ansible",
+        "elagil.pre-commit-helper",
+        "redhat.vscode-yaml",
+        "bbenoist.vagrant",
+        "marcostazi.VS-code-vagrantfile"
+    ]
+}
