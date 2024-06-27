@@ -18,9 +18,15 @@
 
 - name: Create Private network
   community.docker.docker_network:
-    name: private_docker_network
+    name: "{{ docker_network_private }}"
     state: present
     internal: false
+    driver_options:
+      com.docker.network.bridge.enable_ip_masquerade: true
+      com.docker.network.bridge.enable_icc: true
+      com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"
+      com.docker.network.bridge.name: "docker1"
+      com.docker.network.driver.mtu: 1500
     ipam_config:
       - subnet: 172.16.20.0/24
         gateway: 172.16.20.1
@@ -28,9 +34,15 @@
 
 - name: Create Public network
   community.docker.docker_network:
-    name: public_docker_network
+    name: "{{ docker_network_public }}"
     state: present
     internal: false
+    driver_options:
+      com.docker.network.bridge.enable_ip_masquerade: true
+      com.docker.network.bridge.enable_icc: true
+      com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"
+      com.docker.network.bridge.name: "docker2"
+      com.docker.network.driver.mtu: 1500
     ipam_config:
       - subnet: 172.16.100.0/24
         gateway: 172.16.100.1
