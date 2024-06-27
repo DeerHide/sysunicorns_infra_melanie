@@ -16,7 +16,8 @@
   ansible.builtin.file:
     name: "{{ coredns_data_dir }}"
     state: directory
-    mode: "700"
+    mode: '0555'
+    owner: "deerhide-operator"
     recurse: true
   become: true
 
@@ -24,7 +25,16 @@
   ansible.builtin.template:
     src: Corefile.j2
     dest: "{{ coredns_data_dir }}/Corefile"
-    mode: "600"
+    mode: '0555'
+    owner: "deerhide-operator"
+  become: true
+
+- name: Deploy sysunicorns.info zone file to Host
+  ansible.builtin.template:
+    src: sysunicorns.info.hosts.j2
+    dest: "{{ coredns_data_dir }}/sysunicorns.info.hosts"
+    mode: '0555'
+    owner: "deerhide-operator"
   become: true
 
 - name: Create docker_volume for CoreDNS data
@@ -32,7 +42,8 @@
     name: "{{ coredns_docker_volume_name }}"
     driver: local
     driver_options:
-      type: "bind"
+      type: "none"
+      o: "bind"
       device: "{{ coredns_data_dir }}"
     state: present
   become: true
@@ -45,11 +56,10 @@
     restart_policy: always
     exposed_ports:
       - 53
-    ports:
-      - "127.0.0.1:53:53"
+      - 53/udp
     volumes:
       - "{{ coredns_data_dir }}:/data"
-command: -conf /data/Corefile
+    command: -conf /data/Corefile
     networks:
       - name: "{{ docker_network_private }}"
         ipv4_address: "{{ coredns_ip }}"
