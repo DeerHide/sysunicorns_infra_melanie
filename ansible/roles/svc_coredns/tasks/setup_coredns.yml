@@ -49,5 +49,9 @@
       - "127.0.0.1:53:53"
     volumes:
       - "{{ coredns_data_dir }}:/data"
+command: -conf /data/Corefile
+    networks:
+      - name: "{{ docker_network_private }}"
+        ipv4_address: "{{ coredns_ip }}"
     recreate: true
   become: true
