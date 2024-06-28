@@ -7,11 +7,12 @@
     ansible_python_interpreter: auto
   roles:
     # This role manage vagrant specificity
-    - role: vagrant
-    - role: updates
-    - role: svc_docker
-    - role: svc_traefik
-    - role: svc_minio
-    - role: svc_coredns
-    - role: svc_vault
-    - role: deerhide_users
+    # - role: vagrant
+    # - role: updates
+    # - role: svc_docker
+    # - role: svc_traefik
+    # - role: svc_minio
+    # - role: svc_coredns
+    - role: svc_node_exporter
+    # - role: svc_vault
+    # - role: deerhide_users
