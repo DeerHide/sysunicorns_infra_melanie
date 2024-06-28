@@ -1,0 +1,58 @@
+---
+# code: language=ansible
+# [Doc] List of all modules used
+# Apt https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+# File https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+# Get_Url https://docs.ansible.com/ansible/latest/collections/ansible/builtin/get_url_module.html
+# Command https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+# Shell https://docs.ansible.com/ansible/latest/collections/ansible/builtin/shell_module.html
+# Template https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+
+- name: Install prometheus-node-exporter
+  ansible.builtin.apt:
+    name: prometheus-node-exporter
+    state: latest # noqa: package-latest
+    update_cache: true
+  become: true
+
+- name: Copy node-exporter.service
+  ansible.builtin.copy:
+    src: files/node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+    mode: '644'
+  become: true
+  notify:
+    - Restart prometheus-node-exporter service
+  changed_when: false
+
+- name: Ensure node-exporter service is started
+  ansible.builtin.service:
+    name: node_exporter.service
+    enabled: true
+    state: started
+  become: true
+
+- name: Create node-exporter user
+  ansible.builtin.user:
+    name: node-exporter
+    state: present
+    shell: /bin/false
+    createhome: false
+  become: true
+
+- name: Create node-exporter group
+  ansible.builtin.group:
+    name: node-exporter
+    state: present
+  become: true
+
+- name: Create node_exporter directory
+  ansible.builtin.file:
+    path: /usr/local/bin/node-exporter
+    state: directory
+    owner: node-exporter
+    group: node-exporter
+    mode: '644'
+  become: true
+  notify:
+    - Reload daemon
