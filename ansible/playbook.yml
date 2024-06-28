@@ -9,11 +9,12 @@
     - role: svc_traefik
     - role: svc_minio
     - role: svc_coredns
+    - role: svc_node_exporter
     - role: deerhide_users
 
-- name: Rasp's playbook
-  hosts:
-    - rasp
-  roles:
-    - role: svc_docker
-    - role: deerhide_users
+# - name: Rasp's playbook
+#   hosts:
+#     - rasp
+#   roles:
+#     - role: svc_docker
+#     - role: deerhide_users
