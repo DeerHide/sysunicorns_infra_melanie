@@ -4,6 +4,7 @@
   hosts:
     - melanie
   roles:
+    - role: cli_vault
     - role: svc_docker
     - role: svc_traefik
     - role: svc_minio
