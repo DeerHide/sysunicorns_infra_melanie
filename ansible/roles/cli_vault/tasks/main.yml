@@ -1,0 +1,29 @@
+---
+
+- name: Add an Apt signing key for Hashicorp
+  ansible.builtin.apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    state: present
+  become: true
+
+# TODO: Find a way to retrieve this information from the system one time
+- name: Found and register "$VERSION_CODENAME"
+  ansible.builtin.shell:
+    cmd: ". /etc/os-release && echo ${VERSION_CODENAME}"
+  become: true
+  register: version_codename
+  changed_when: false
+
+- name: Add repository to Apt sources
+  ansible.builtin.template:
+    src: templates/hashicorp.list.j2
+    dest: /etc/apt/sources.list.d/hashicorp.list
+    mode: '0644'
+  become: true
+
+- name: Update repositories cache and install "vault" package
+  ansible.builtin.apt:
+    name: vault
+    state: latest # noqa: package-latest
+    update_cache: true
+  become: true
