@@ -1,0 +1,4 @@
+---
+# code: language=ansible
+- name: Include install_prometheus.yml
+  ansible.builtin.include_tasks: install_prometheus.yml
