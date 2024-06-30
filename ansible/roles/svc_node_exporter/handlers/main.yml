@@ -1,0 +1,13 @@
+---
+# code: language=ansible
+
+- name: Restart prometheus-node-exporter service
+  ansible.builtin.systemd_service:
+    name: node_exporter
+    state: restarted
+  become: true
+
+- name: Reload daemon
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+  become: true
