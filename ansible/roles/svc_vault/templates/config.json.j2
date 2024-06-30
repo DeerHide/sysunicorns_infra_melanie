@@ -1,0 +1,20 @@
+{
+    "listener": {
+        "tcp": {
+            "address": "{{ vault_docker_ip }}:8200",
+            "tls_disable": "true"
+        }
+    },
+    "storage": [
+        {
+            "file":{
+                "path": "/vault/file"
+            }
+        }
+    ],
+    "ui": true,
+    "default_lease_ttl": "1h",
+    "max_lease_ttl": "48h",
+    "api_addr": "http://{{ vault_docker_ip }}:8200",
+    "disable_clustering": true
+}

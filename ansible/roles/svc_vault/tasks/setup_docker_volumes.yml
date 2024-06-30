@@ -1,0 +1,92 @@
+---
+# language: ansible
+# Path: ansible/roles/svc_vault/tasks/setup_docker_volumes.yml
+
+# NOTE : Directories are created with root ownership and 700 permissions
+# to ensure that only the root user can access the data
+# We can see later how to improve this by using a dedicated user for Vault
+# or other solutions
+
+# Create directories for Vault volumes
+
+- name: Create a main directory for all Vault Volumes
+  ansible.builtin.file:
+    name: "{{ vault_volumes_dir }}"
+    state: directory
+    mode: "700"
+    owner: "root"
+    group: "root"
+  become: true
+
+- name: Create docker_volume for Vault data
+  ansible.builtin.file:
+    name: "{{ vault_volumes_file_dir }}"
+    state: directory
+    mode: "700"
+    owner: "root"
+    group: "root"
+  become: true
+
+- name: Create docker_volume for Vault config
+  ansible.builtin.file:
+    name: "{{ vault_volumes_config_dir }}"
+    state: directory
+    mode: "700"
+    owner: "root"
+    group: "root"
+  become: true
+
+- name: Create docker_volume for Vault logs
+  ansible.builtin.file:
+    name: "{{ vault_volumes_logs_dir }}"
+    state: directory
+    mode: "700"
+    owner: "root"
+    group: "root"
+  become: true
+
+# Deploy the configuration file for Vault
+
+- name: Deploy the configuration file for Vault
+  ansible.builtin.template:
+    src: "templates/config.json.j2"
+    dest: "{{ vault_volumes_config_dir }}/config.json"
+    owner: "root"
+    group: "root"
+    mode: "600"
+  become: true
+
+# Create docker volumes for Vault
+
+- name: Create docker_volume for Vault data
+  community.docker.docker_volume:
+    name: "{{ vault_volumes_file_dir_name }}"
+    driver: local
+    driver_options:
+      type: "none"
+      o: "bind"
+      device: "{{ vault_volumes_file_dir }}"
+    state: present
+  become: true
+
+- name: Create docker_volume for Vault config
+  community.docker.docker_volume:
+    name: "{{ vault_volumes_config_dir_name }}"
+    driver: local
+    driver_options:
+      type: "none"
+      o: "bind"
+      device: "{{ vault_volumes_config_dir }}"
+    state: present
+  become: true
+
+- name: Create docker_volume for Vault logs
+  community.docker.docker_volume:
+    name: "{{ vault_volumes_logs_dir_name }}"
+    driver: local
+    driver_options:
+      type: "none"
+      o: "bind"
+      device: "{{ vault_volumes_logs_dir }}"
+    state: present
+  become: true
