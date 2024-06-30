@@ -16,21 +16,26 @@
   # TODO: add a handler to notify through slack if the image was updated (pulled) with the version number
   # TODO: add a handler to restart the container if the image was updated (pulled)
 
-- name: Create a directory for the Vault data
-  ansible.builtin.file:
-    name: "{{ vault_data_dir }}"
-    state: directory
-    mode: "700"
-    # TODO: set recurse to false when INFRA-14 is resolved
-    recurse: true
-  become: true
-
-- name: Create docker_volume for Vault data
-  community.docker.docker_volume:
-    name: "{{ vault_docker_volume_name }}"
-    driver: local
-    driver_options:
-      type: "bind"
-      device: "{{ vault_data_dir }}"
-    state: present
+- name: Create docker container for vault
+  community.docker.docker_container:
+    name: "{{ vault_docker_container_name }}"
+    image: hashicorp/vault:latest
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ vault_volumes_file_dir }}:/vault/file"
+      - "{{ vault_volumes_config_dir }}:/vault/config"
+      - "{{ vault_volumes_logs_dir }}:/vault/logs"
+    ipc_mode: "private"
+    capabilities:
+      - IPC_LOCK
+    command: "vault server -config /vault/config/config.json"
+    exposed_ports:
+      - "8200"
+    ports:
+      - "127.0.0.1:8200:8200"
+    recreate: true
+    networks:
+      - name: "{{ docker_network_private }}"
+        ipv4_address: "{{ vault_docker_ip }}"
   become: true

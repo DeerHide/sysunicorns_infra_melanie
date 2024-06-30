@@ -1,4 +1,6 @@
 ---
 # code: language=ansible
+- name: Include tasks from setup_docker_volumes.yml
+  ansible.builtin.include_tasks: setup_docker_volumes.yml
 - name: Include tasks from setup_docker.yml
   ansible.builtin.include_tasks: setup_docker.yml
