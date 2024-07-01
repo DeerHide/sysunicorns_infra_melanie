@@ -13,9 +13,9 @@
     - role: svc_node_exporter
     - role: deerhide_users
 
-# - name: Rasp's playbook
-#   hosts:
-#     - rasp
-#   roles:
-#     - role: svc_docker
-#     - role: deerhide_users
+- name: Rasp's playbook
+  hosts:
+    - rasp
+  roles:
+    - role: svc_docker
+    - role: deerhide_users
