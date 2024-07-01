@@ -4,6 +4,7 @@
         "elagil.pre-commit-helper",
         "redhat.vscode-yaml",
         "bbenoist.vagrant",
-        "marcostazi.VS-code-vagrantfile"
+        "marcostazi.VS-code-vagrantfile",
+        "irongeek.vscode-env"
     ]
 }

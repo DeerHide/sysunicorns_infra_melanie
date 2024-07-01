@@ -1,1 +1,7 @@
 .vagrant
+
+# Env
+.env
+# Ansible Secrets
+.vault_pass.txt
+ansible-vars.yml
