@@ -15,18 +15,13 @@
     update_cache: true
   become: true
 
-- name: Create prometheus user
+- name: Create prometheus user and group
   ansible.builtin.user:
     name: prometheus
+    group: prometheus
     state: present
     shell: /bin/false
     createhome: false
-  become: true
-
-- name: Create prometheus group
-  ansible.builtin.group:
-    name: prometheus
-    state: present
   become: true
 
 - name: Prometheus configuration file
