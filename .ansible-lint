@@ -1,0 +1,7 @@
+---
+# code: language=yaml
+
+# .ansible-lint
+
+exclude_paths:
+  - ansible-vars.yml
