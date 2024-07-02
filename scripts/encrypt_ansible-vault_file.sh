@@ -21,19 +21,26 @@ then
   exit 1
 fi
 
-# Check if the ansible-vars.yaml.encrypted file exists and remove it
-if [[ -f ansible-vars.yml.encrypted ]]
+variable_name_to_encrypt=${1:-""}
+
+if [[ -z "${variable_name_to_encrypt}" ]]
 then
-  echo "$ORANGE Removing existing ansible-vars.yaml.encrypted $NC"
-  rm -f ansible-vars.yml.encrypted
+  echo -e "$RED Please provide the variable name to encrypt $NC"
+  exit 1
 fi
 
-# Encrypt the ansible-vars.yaml file
-ansible-vault \
-  encrypt \
-  --encrypt-vault-id=default \
-  --vault-password-file="${ANSIBLE_VAULT_PASSWORD_FILE}" \
-  --output=ansible-vars.yml.encrypted \
-  ansible-vars.yml
+function encrypt_value(){
+  local variable_name_to_encrypt=$1
+  actual_variable_value=$(cat ansible-vars.yml | yq e ".${variable_name_to_encrypt}" - )
+  cat ansible-vars.yml | yq e ".${variable_name_to_encrypt}" - >> /dev/stderr
+  echo -e "${actual_variable_value}" >> /dev/stderr
+  echo -e "${actual_variable_value}" | ansible-vault \
+    encrypt_string \
+    --encrypt-vault-id=default \
+    --vault-password-file ${ANSIBLE_VAULT_PASSWORD_FILE} \
+    -n "${variable_name_to_encrypt}"
+}
 
-echo "$GREEN ansible-vars.yml has been encrypted to ansible-vars.yaml.encrypted $NC"
+new_value=$(encrypt_value ${variable_name_to_encrypt})
+
+yq e -i ".${variable_name_to_encrypt} = \"${new_value}\"" ansible-vars.yml
