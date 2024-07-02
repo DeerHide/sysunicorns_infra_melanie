@@ -9,3 +9,11 @@
   become_user: deerhide-operator
   register: import_operator_gpg
   changed_when: true
+
+- name: Clean target directory
+  ansible.builtin.file:
+    path: /tmp/operator-gpg
+    state: absent
+    force: true
+  become: true
+  become_user: deerhide-operator
