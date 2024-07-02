@@ -1,6 +1,7 @@
 ---
 # code: language=ansible
 
+
 - name: Include setup_operator_common.yml
   ansible.builtin.include_tasks: setup_operator_common.yml
 
@@ -9,3 +10,6 @@
 
 - name: Include setup_operator_user.yml
   ansible.builtin.include_tasks: setup_operator_users.yml
+
+- name: Import deploy_operator_pgp.yml
+  ansible.builtin.import_tasks: deploy_operator_pgp.yml
