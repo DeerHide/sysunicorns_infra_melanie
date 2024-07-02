@@ -1,0 +1,11 @@
+---
+# code: language=ansible
+# Path: ansible/roles/deerhide_users/handlers/main.yml
+# Handlers
+
+- name: Import the operator's PGP key
+  ansible.builtin.shell: "gpg --import /tmp/operator-gpg/keys/*"
+  become: true
+  become_user: deerhide-operator
+  register: import_operator_gpg
+  changed_when: true
