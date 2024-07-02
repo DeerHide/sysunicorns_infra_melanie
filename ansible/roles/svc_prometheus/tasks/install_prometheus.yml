@@ -1,0 +1,37 @@
+---
+# code: language=ansible
+# [Doc] List of all modules used
+# Apt https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+# File https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+# Get_Url https://docs.ansible.com/ansible/latest/collections/ansible/builtin/get_url_module.html
+# Command https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html
+# Shell https://docs.ansible.com/ansible/latest/collections/ansible/builtin/shell_module.html
+# Template https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+
+- name: Install prometheus
+  ansible.builtin.apt:
+    name: prometheus
+    state: latest # noqa: package-latest
+    update_cache: true
+  become: true
+
+- name: Create prometheus user and group
+  ansible.builtin.user:
+    name: prometheus
+    group: prometheus
+    state: present
+    shell: /bin/false
+    createhome: false
+  become: true
+
+- name: Prometheus configuration file
+  ansible.builtin.template:
+    src: templates/prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    mode: '755'
+    owner: prometheus
+    group: prometheus
+  notify:
+    - Restart prometheus service
+  become: true
+  changed_when: false

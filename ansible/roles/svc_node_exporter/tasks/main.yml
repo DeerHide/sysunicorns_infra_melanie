@@ -1,0 +1,4 @@
+---
+# code: language=ansible
+- name: Include install_node_exporter.yml
+  ansible.builtin.include_tasks: install_node_exporter.yml
