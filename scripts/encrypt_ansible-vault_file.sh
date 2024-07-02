@@ -44,4 +44,3 @@ function encrypt_value(){
 new_value=$(encrypt_value ${variable_name_to_encrypt})
 
 yq e -i ".${variable_name_to_encrypt} = \"${new_value}\"" ansible-vars.yml
-
