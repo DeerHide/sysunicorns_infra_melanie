@@ -1,5 +1,5 @@
 {
-  "ansible.python.interpreterPath": "/usr/bin/python3",
+  "ansible.python.interpreterPath": "c:\\Program Files\\Python312\\python.exe",
   "editor.formatOnSave": true,
   "files.trimTrailingWhitespace": true,
   "pre-commit-helper.runOnSave": "all hooks"
