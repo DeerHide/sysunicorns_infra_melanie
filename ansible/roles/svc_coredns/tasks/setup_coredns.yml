@@ -47,7 +47,11 @@
       - 53
     ports:
       - "127.0.0.1:53:53"
+      - "127.0.0.1:53:53/udp"
     volumes:
       - "{{ coredns_data_dir }}:/data"
     recreate: true
+    networks:
+      - name: "{{ docker_network_private }}"
+        ipv4_address: "{{ coredns_ip }}"
   become: true

@@ -7,3 +7,4 @@ coredns_data_dir: "{{ docker_volumes_dir }}/{{ coredns_data_dir_name }}"
 coredns_docker_image_name: coredns/coredns
 coredns_docker_image_version: latest
 coredns_docker_volume_name: svc_coredns_data_volume
+coredns_ip: 172.16.20.53
