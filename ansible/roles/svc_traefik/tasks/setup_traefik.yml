@@ -32,7 +32,8 @@
     name: "{{ traefik_docker_volume_name }}"
     driver: local
     driver_options:
-      type: "bind"
+      type: "none"
+      o: "bind"
       device: "{{ traefik_data_dir }}"
     state: present
   become: true

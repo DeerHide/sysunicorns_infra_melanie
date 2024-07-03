@@ -25,7 +25,8 @@
     name: "{{ minio_docker_volume_name }}"
     driver: local
     driver_options:
-      type: "bind"
+      type: "none"
+      o: "bind"
       device: "{{ minio_data_dir }}"
     state: present
   become: true
