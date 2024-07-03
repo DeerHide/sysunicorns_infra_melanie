@@ -1,32 +1,11 @@
 ---
 # code: language=ansible
 
-- name: Create deerhide-operator group
-  ansible.builtin.group:
-    name: deerhide-operator
-    state: present
-  become: true
+- name: Include setup_operator_common.yml
+  ansible.builtin.include_tasks: setup_operator_common.yml
 
-- name: Create deerhide-operator user
-  ansible.builtin.user:
-    name: deerhide-operator
-    group: deerhide-operator
-    state: present
-    shell: /bin/bash
-    home: /home/deerhide-operator
-    createhome: true
-  become: true
+- name: Include setup_operator_group.yml
+  ansible.builtin.include_tasks: setup_operator_group.yml
 
-- name: Create deerhide-operator dedicated user
-  ansible.builtin.user:
-    name: "deerhide-operator-{{ item }}"
-    group: deerhide-operator
-    state: present
-    shell: /bin/bash
-    home: /home/deerhide-operator-{{ item }}
-    createhome: true
-  become: true
-  with_items:
-    - "tom4897"
-    - "miragecentury"
-    - "nakou"
+- name: Include setup_operator_user.yml
+  ansible.builtin.include_tasks: setup_operator_users.yml
