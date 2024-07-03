@@ -1,0 +1,16 @@
+---
+# code: language=ansible
+# Path: ansible/roles/deerhide_users/tasks/setup_operator_common.yml
+
+- name: Create deerhide-operator group
+  ansible.builtin.group:
+    name: deerhide-operator
+    state: present
+  become: true
+
+- name: Add deerhide-operator users to docker group
+  ansible.builtin.user:
+    name: "deerhide-operator"
+    groups: docker
+    append: true
+  become: true

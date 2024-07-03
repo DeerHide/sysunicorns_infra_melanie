@@ -1,0 +1,28 @@
+---
+# code: language=ansible
+# Path: ansible/roles/deerhide_users/tasks/setup_operator_user.yml
+
+- name: Create deerhide-operator dedicated user
+  ansible.builtin.user:
+    name: "deerhide-operator-{{ item }}"
+    group: deerhide-operator
+    state: present
+    shell: /bin/bash
+    home: /home/deerhide-operator-{{ item }}
+    createhome: true
+  become: true
+  with_items:
+    - "tom4897"
+    - "miragecentury"
+    - "nakou"
+
+- name: Add deerhide-operator users to docker group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  become: true
+  with_items:
+    - "tom4897"
+    - "miragecentury"
+    - "nakou"

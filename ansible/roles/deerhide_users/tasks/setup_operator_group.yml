@@ -1,0 +1,9 @@
+---
+# code: language=ansible
+# Path: ansible/roles/deerhide_users/tasks/setup_operator_group.yml
+
+- name: Create deerhide-operator group
+  ansible.builtin.group:
+    name: deerhide-operator
+    state: present
+  become: true
