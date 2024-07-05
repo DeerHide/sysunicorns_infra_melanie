@@ -1,0 +1,10 @@
+---
+# code: language=ansible
+# Path: ansible/group_vars/all/fluentd.yml
+# This file contains the variables for the Fluentd service
+fluentd_data_dir_name: svc_fluentd_data
+fluentd_data_dir: "{{ docker_volumes_dir }}/{{ fluentd_data_dir_name }}"
+fluentd_docker_image_name: fluent/fluentd
+fluentd_docker_image_version: edge
+fluentd_docker_volume_name: svc_fluentd_data_volume
+fluentd_ip: 172.16.100.20
