@@ -1,0 +1,66 @@
+---
+# code: language=ansible
+# [Doc] List of all modules used
+# File https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html
+# Template https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html
+# Docker_image_pull https://docs.ansible.com/ansible/latest/collections/community/docker/docker_image_pull_module.html
+# Docker_volume https://docs.ansible.com/ansible/latest/collections/community/docker/docker_volume_module.html
+# Docker_container https://docs.ansible.com/ansible/latest/collections/community/docker/docker_container_module.html
+
+- name: Pull fluentd image
+  community.docker.docker_image_pull:
+    name: "{{ fluentd_docker_image_name }}"
+    tag: "{{ fluentd_docker_image_version }}"
+    pull: always
+    timeout: 10
+    tls: true
+    tls_hostname: "{{ docker_registry_hostname }}"
+  become: true
+
+- name: Create directory for fluentd
+  ansible.builtin.file:
+    name: "{{ fluentd_data_dir }}"
+    state: directory
+    mode: "700"
+    recurse: true
+  become: true
+
+- name: Deploy fluentd Configuration to Host
+  ansible.builtin.template:
+    src: templates/fluentd.yml.j2
+    dest: "{{ fluentd_data_dir }}/fluentd.yml"
+    mode: "600"
+  become: true
+
+- name: Create docker_volume for fluentd data
+  community.docker.docker_volume:
+    name: "{{ fluentd_docker_volume_name }}"
+    driver: local
+    driver_options:
+      type: "none"
+      o: "bind"
+      device: "{{ fluentd_data_dir }}"
+    state: present
+  become: true
+
+- name: Create fluentd container
+  community.docker.docker_container:
+    name: svc_fluentd
+    image: "{{ fluentd_docker_image_name }}:{{ fluentd_docker_image_version }}"
+    state: started
+    restart_policy: always
+    exposed_ports:
+      - 24224
+      - 24231
+      - 5140
+    ports:
+      - "127.0.0.1:24224:24224"
+      - "127.0.0.1:24231:24231"
+      - "127.0.0.1:5140:5140"
+    networks:
+      - name: "{{ docker_network_public }}"
+        ipv4_address: "{{ fluentd_ip }}"
+    volumes:
+      - "{{ fluentd_data_dir }}/fluentd.yml:/etc/fluentd/fluentd.yml"
+    recreate: true
+  become: true
