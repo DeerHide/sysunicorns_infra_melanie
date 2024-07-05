@@ -27,8 +27,8 @@
 
 - name: Deploy fluentd Configuration to Host
   ansible.builtin.template:
-    src: templates/fluentd.yml.j2
-    dest: "{{ fluentd_data_dir }}/fluentd.yml"
+    src: templates/fluentd.conf.j2
+    dest: "{{ fluentd_data_dir }}/fluentd.conf"
     mode: "600"
   become: true
 
@@ -58,6 +58,7 @@
       LOKI_URL: "{{ melanie_fluentd_loki_url }}"
       LOKI_USERNAME: "{{ melanie_fluentd_loki_username }}"
       LOKI_PASSWORD: "{{ melanie_fluentd_loki_password }}"
+      FLUENTD_CONF: "/fluentd/etc/fluentd.conf"
     exposed_ports:
       - 24224
     ports:
@@ -66,6 +67,7 @@
       - name: "{{ docker_network_public }}"
         ipv4_address: "{{ fluentd_ip }}"
     volumes:
+      - "{{ fluentd_data_dir }}/fluentd.conf:/fluentd/etc/fluentd.conf"
       - host_logs:/var/log
       # Needed for journald log ingestion:
       - /etc/machine-id:/etc/machine-id
