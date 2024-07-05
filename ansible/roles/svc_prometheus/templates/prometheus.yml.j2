@@ -28,8 +28,8 @@ scrape_configs:
   - job_name: "prometheus"
 
     # Override the global default and scrape targets from this job every 5 seconds.
-    scrape_interval: 5s
-    scrape_timeout: 5s
+    scrape_interval: 30s
+    scrape_timeout: 30s
 
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
@@ -46,5 +46,5 @@ scrape_configs:
 remote_write:
   - url: https://prometheus-prod-24-prod-eu-west-2.grafana.net/api/prom/push
     basic_auth:
-      username: "FIXME" # secure information
-      password: "FIXME" # secure information
+      username: "{{ melanie_prometheus_grafana_user }}" # secure information
+      password: "{{ melanie_prometheus_grafana_password }}" # secure information
