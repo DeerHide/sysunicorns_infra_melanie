@@ -49,18 +49,27 @@
     image: "{{ fluentd_docker_image_name }}:{{ fluentd_docker_image_version }}"
     state: started
     restart_policy: always
+    command:
+      - "fluentd"
+      - "-v"
+      - "-p"
+      - "/fluentd/plugins"
+    env:
+      LOKI_URL: http://127.0.0.1:3100
+      LOKI_USERNAME: ""
+      LOKI_PASSWORD: ""
     exposed_ports:
       - 24224
-      - 24231
-      - 5140
     ports:
       - "127.0.0.1:24224:24224"
-      - "127.0.0.1:24231:24231"
-      - "127.0.0.1:5140:5140"
     networks:
       - name: "{{ docker_network_public }}"
         ipv4_address: "{{ fluentd_ip }}"
     volumes:
-      - "{{ fluentd_data_dir }}/fluentd.yml:/etc/fluentd/fluentd.yml"
+      - host_logs:/var/log
+      # Needed for journald log ingestion:
+      - /etc/machine-id:/etc/machine-id
+      - /dev/log:/dev/log
+      - /var/run/systemd/journal/:/var/run/systemd/journal/
     recreate: true
   become: true
