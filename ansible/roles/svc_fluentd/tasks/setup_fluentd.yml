@@ -23,13 +23,17 @@
     state: directory
     mode: "700"
     recurse: true
+    owner: "deerhide-operator"
+    group: "deerhide-operator"
   become: true
 
 - name: Deploy fluentd Configuration to Host
   ansible.builtin.template:
     src: templates/fluentd.conf.j2
     dest: "{{ fluentd_data_dir }}/fluentd.conf"
-    mode: "600"
+    mode: "444"
+    owner: "deerhide-operator"
+    group: "deerhide-operator"
   become: true
 
 - name: Create docker_volume for fluentd data
@@ -49,16 +53,17 @@
     image: "{{ fluentd_docker_image_name }}:{{ fluentd_docker_image_version }}"
     state: started
     restart_policy: always
+    privileged: false
     command:
       - "fluentd"
-      - "-v"
       - "-p"
       - "/fluentd/plugins"
     env:
-      LOKI_URL: "{{ melanie_fluentd_loki_url }}"
-      LOKI_USERNAME: "{{ melanie_fluentd_loki_username }}"
-      LOKI_PASSWORD: "{{ melanie_fluentd_loki_password }}"
-      FLUENTD_CONF: "/fluentd/etc/fluentd.conf"
+      LOKI_URL: "{{ melanie_fluentd_loki_url | trim }}"
+      LOKI_USERNAME: "{{ melanie_fluentd_loki_username | trim }}"
+      LOKI_PASSWORD: "{{ melanie_fluentd_loki_password | trim }}"
+      FLUENTD_CONF: "fluentd.conf"
+      FLUENT_UID: "1000"
     exposed_ports:
       - 24224
     ports:
@@ -75,3 +80,4 @@
       - /var/run/systemd/journal/:/var/run/systemd/journal/
     recreate: true
   become: true
+  become_user: deerhide-operator
