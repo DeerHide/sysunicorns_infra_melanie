@@ -31,10 +31,8 @@ fi
 
 function encrypt_value(){
   local variable_name_to_encrypt=$1
-  actual_variable_value=$(cat ansible-vars.yml | yq e ".${variable_name_to_encrypt}" - )
-  cat ansible-vars.yml | yq e ".${variable_name_to_encrypt}" - >> /dev/stderr
-  echo -e "${actual_variable_value}" >> /dev/stderr
-  echo -e "${actual_variable_value}" | ansible-vault \
+  actual_variable_value=$(yq e ".${variable_name_to_encrypt} | sub(\"\n$\",\"\")" ansible-vars.yml )
+  echo -n "${actual_variable_value}" | ansible-vault \
     encrypt_string \
     --encrypt-vault-id=default \
     --vault-password-file ${ANSIBLE_VAULT_PASSWORD_FILE} \
@@ -42,5 +40,6 @@ function encrypt_value(){
 }
 
 new_value=$(encrypt_value ${variable_name_to_encrypt})
-
 yq e -i ".${variable_name_to_encrypt} = \"${new_value}\"" ansible-vars.yml
+sed -i 's/ |-//g' ansible-vars.yml
+yq -i e "." ansible-vars.yml
