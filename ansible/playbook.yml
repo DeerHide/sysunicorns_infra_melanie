@@ -6,6 +6,7 @@
   roles:
     - role: cli_vault
     - role: svc_docker
+    - role: svc_fluentd
     - role: svc_traefik
     - role: svc_minio
     - role: svc_coredns
