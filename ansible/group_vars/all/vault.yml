@@ -14,3 +14,6 @@ vault_volumes_file_dir: "{{ docker_volumes_dir }}/{{ vault_volumes_file_dir_name
 
 vault_docker_container_name: svc_vault
 vault_docker_ip: "172.16.20.100"
+
+# TODO: Switch to the SSL version of the vault once the certificate is in place
+vault_shell_addr: "http://127.0.0.1:8200"
