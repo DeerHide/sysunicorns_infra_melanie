@@ -1,0 +1,17 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_vault/tasks/requirements.yml
+# Install the requirements for the svc_vault role
+
+
+# It's required on the target machine to be able to use the hashi_vault module
+# https://docs.ansible.com/ansible/latest/collections/community/hashi_vault/index.html#plugins-in-community-hashi-vault
+- name: Install Python lib for hashi_vault
+  ansible.builtin.pip:
+    name: hvac
+    state: latest # noqa: package-latest
+  become: true
+  become_user: "{{ item }}"
+  with_items:
+    - root
+    - deerhide-operator
