@@ -13,6 +13,7 @@
     - role: svc_prometheus
     - role: svc_node_exporter
     - role: deerhide_users
+    - role: svc_vault
 
 - name: Rasp's playbook
   hosts:
