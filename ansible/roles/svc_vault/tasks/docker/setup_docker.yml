@@ -43,3 +43,12 @@
       fluentd-address: "127.0.0.1:24224"
       tag: "svc_vault"
   become: true
+
+- name: Wait for the vault to be ready
+  ansible.builtin.wait_for:
+    host: "{{ vault_docker_ip }}"
+    port: 8200
+    state: started
+    delay: 5
+    timeout: 240
+  delegate_to: localhost
