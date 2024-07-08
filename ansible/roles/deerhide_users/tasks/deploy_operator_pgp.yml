@@ -8,38 +8,43 @@
     path: "/home/deerhide-operator/.ssh"
     state: directory
     mode: "700"
+    owner: deerhide-operator
+    group: deerhide-operator
   become: true
-  become_user: deerhide-operator
 
 - name: Set DeployKey for the operator's PGP key
   ansible.builtin.template:
     src: "templates/github_operator-gpg_deploy_key.j2"
     dest: "/home/deerhide-operator/.ssh/github_operator-gpg_deploy_key"
     mode: "400"
+    owner: deerhide-operator
+    group: deerhide-operator
   become: true
-  become_user: deerhide-operator
 
 - name: Set DeployKey for the operator's PGP pub key
   ansible.builtin.template:
     src: "templates/github_operator-gpg_deploy_key.pub.j2"
     dest: "/home/deerhide-operator/.ssh/github_operator-gpg_deploy_key.pub"
     mode: "400"
+    owner: deerhide-operator
+    group: deerhide-operator
   become: true
-  become_user: deerhide-operator
 
 - name: Ensure target directory don't exists
   ansible.builtin.file:
-    path: /tmp/operator-gpg
-    state: absent
-    force: true
+    path: /opt/operator
+    state: directory
+    owner: deerhide-operator
+    group: deerhide-operator
+    mode: "0775"
   become: true
-  become_user: deerhide-operator
 
 - name: Clone the operator's PGP key
   ansible.builtin.git:
     repo: ssh://git@github.com/DeerHide/operator-gpg.git
     depth: 1
-    dest: /tmp/operator-gpg
+    single_branch: true
+    dest: /opt/operator/operator-gpg
     version: main
     accept_newhostkey: true
     key_file: "/home/deerhide-operator/.ssh/github_operator-gpg_deploy_key"
@@ -48,4 +53,3 @@
   register: git_operator_gpg
   notify:
     - Import the operator's PGP key
-    - Clean target directory
