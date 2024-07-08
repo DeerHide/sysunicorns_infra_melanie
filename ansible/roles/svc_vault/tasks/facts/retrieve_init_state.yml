@@ -3,19 +3,19 @@
 # Path: ansible/roles/svc_vault/tasks/facts/retrieve_init_state.yml
 # This task retrieves the vault initialization status
 
-- name: Detect if the vault was already initialized
-  ansible.builtin.command:
-    argv:
-      - "vault"
-      - "operator"
-      - "init"
-      - "-address={{ vault_shell_addr }}"
-      - "-status"
-      - "-format=json"
+- name: Detect if the vault was already initialized # noqa: command-instead-of-shell
+  ansible.builtin.shell:
+    cmd: "vault operator init -status -format=json"
+  environment:
+    "VAULT_ADDR": "{{ vault_shell_addr }}:{{ vault_shell_port }}"
   register: vault_status
   failed_when: false
   changed_when: false
 
+- name: Debug the vault status
+  ansible.builtin.debug:
+    var: vault_status
+
 - name: Set the vault initialized status as a fact
   ansible.builtin.set_fact:
-    svc_vault_initialized: !!str "{{ vault_status.stdout | from_json | community.general.json_query('Initialized') | bool }}"
+    svc_vault_initialized: "{{ vault_status.stdout | from_json | community.general.json_query('Initialized') | bool }}"
