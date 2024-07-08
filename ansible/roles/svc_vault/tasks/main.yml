@@ -1,6 +1,27 @@
 ---
 # code: language=ansible
+# Path: ansible/roles/svc_vault/tasks/main.yml
+#
+
+- name: Include tasks from requirements.yml
+  ansible.builtin.include_tasks: requirements.yml
+
 - name: Include tasks from setup_docker_volumes.yml
-  ansible.builtin.include_tasks: setup_docker_volumes.yml
+  ansible.builtin.include_tasks: docker/setup_docker_volumes.yml
+
 - name: Include tasks from setup_docker.yml
-  ansible.builtin.include_tasks: setup_docker.yml
+  ansible.builtin.include_tasks: docker/setup_docker.yml
+
+- name: Include tasks from facts/retrieve_init_state.yml
+  ansible.builtin.include_tasks: facts/retrieve_init_state.yml
+
+- name: Include tasks from vault/initialize.yml if the vault was not initialized
+  ansible.builtin.include_tasks: vault/initialize.yml
+  when: svc_vault_initialized == false # noqa: literal-compare
+
+- name: Include tasks from facts/retrieve_seal_state.yml
+  ansible.builtin.include_tasks: facts/retrieve_seal_state.yml
+
+- name: Include tasks from vault/unseal.yml if the vault is sealed
+  ansible.builtin.include_tasks: vault/unseal.yml
+  when: svc_vault_sealed == true # noqa: literal-compare

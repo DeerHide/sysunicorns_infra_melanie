@@ -1,0 +1,24 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_vault/tasks/vault_initialize.yml
+# This task initializes the vault and send the unseal keys to the operators
+
+
+- name: Initialize the vault
+  ansible.builtin.command:
+    argv:
+      - "vault"
+      - "operator"
+      - "init"
+      - "-address=\"{{ vault_shell_addr }}\""
+      - "-key-shares=3"
+      - "-key-threshold=1"
+      - "-root-token-pgp-key={{ vault_initialize_pgp_keys }}"
+      - "-non-interactive"
+      - "-format=json"
+  register: vault_init
+  changed_when: true
+
+- name: Debug the vault init
+  ansible.builtin.debug:
+    var: vault_init

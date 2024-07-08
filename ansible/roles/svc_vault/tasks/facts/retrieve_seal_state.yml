@@ -1,0 +1,19 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_vault/tasks/facts/retrieve_seal_state.yml
+# This task retrieves the vault seal status
+
+- name: Detect if the vault is sealed
+  ansible.builtin.command:
+    argv:
+      - "vault"
+      - "operator"
+      - "seal-status"
+      - "-address={{ vault_shell_addr }}"
+      - "-format=json"
+  register: vault_seal_status
+  changed_when: false
+
+- name: Set the vault sealed status as a fact
+  ansible.builtin.set_fact:
+    svc_vault_sealed: !!str "{{ vault_seal_status.stdout | from_json | community.general.json_query('Sealed') | bool }}"
