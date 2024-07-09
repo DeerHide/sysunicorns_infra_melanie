@@ -2,3 +2,5 @@
 # code: language=ansible
 - name: Include tasks from setup_minio.yml
   ansible.builtin.include_tasks: setup_minio.yml
+- name: Include tasks from setup_minio_users.yml
+  ansible.builtin.include_tasks: setup_minio_users.yml
