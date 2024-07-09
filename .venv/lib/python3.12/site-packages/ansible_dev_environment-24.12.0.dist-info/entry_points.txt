@@ -1,0 +1,2 @@
+[console_scripts]
+ade = ansible_dev_environment.cli:main

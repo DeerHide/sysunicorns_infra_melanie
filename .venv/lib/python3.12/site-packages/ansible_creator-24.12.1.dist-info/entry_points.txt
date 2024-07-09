@@ -1,0 +1,2 @@
+[console_scripts]
+ansible-creator = ansible_creator.cli:main

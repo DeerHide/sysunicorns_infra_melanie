@@ -1,0 +1,2 @@
+[console_scripts]
+ansible-navigator = ansible_navigator.cli:main

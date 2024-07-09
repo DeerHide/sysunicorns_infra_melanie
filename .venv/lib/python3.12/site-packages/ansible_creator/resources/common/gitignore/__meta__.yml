@@ -1,0 +1,19 @@
+collection_project:
+  additions:
+    template: False
+    value: ""
+
+playbook_project:
+  additions:
+    template: True
+    value: |
+      .logs/*
+      *.retry
+      *.vault
+      collections/*
+      !collections/ansible_collections
+      !collections/requirements.yml
+      collections/ansible_collections/*
+      !collections/ansible_collections/{{ namespace }}
+      collections/ansible_collections/{{ namespace }}/*
+      !collections/ansible_collections/{{ namespace }}/{{ collection_name }}

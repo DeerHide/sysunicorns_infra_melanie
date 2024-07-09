@@ -1,0 +1,2 @@
+[console_scripts]
+ansible-sign = ansible_sign.cli:run
