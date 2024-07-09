@@ -1,0 +1,2 @@
+[tox]
+tox-ansible = tox_ansible.plugin

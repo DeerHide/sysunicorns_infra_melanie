@@ -1,0 +1,43 @@
+Metadata-Version: 2.1
+Name: ansible-sign
+Version: 0.1.1
+Summary: Ansible content validation library and CLI
+Home-page: https://github.com/ansible/ansible-sign/
+Author: Rick Elrod
+Author-email: relrod@redhat.com
+License: MIT
+Project-URL: Documentation, https://ansible.github.io/ansible-sign/
+Project-URL: Source, https://github.com/ansible/ansible-sign
+Project-URL: Tracker, https://github.com/ansible/ansible-sign/issues
+Platform: any
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python
+Description-Content-Type: text/markdown; charset=UTF-8
+License-File: LICENSE.txt
+Requires-Dist: python-gnupg
+Requires-Dist: distlib
+Requires-Dist: importlib-metadata ; python_version < "3.8"
+Provides-Extra: testing
+Requires-Dist: setuptools ; extra == 'testing'
+Requires-Dist: pytest ; extra == 'testing'
+Requires-Dist: pytest-cov ; extra == 'testing'
+
+# `ansible-sign`
+
+This is a library and auxillary CLI tool for dealing with Ansible content
+verification.
+
+It does the following:
+
+- checksum manifest generation and validation (sha256sum)
+- GPG detached signature generation and validation (using python-gnupg) for
+  content
+
+Note: The API (library) part of this package is not officially supported and
+might change as time goes on. CLI commands should be considered stable within
+major verions (the `X` of version `X.Y.Z`).
+
+Documentation can be found [here](https://ansible.github.io/ansible-sign/)
+including a
+[rundown/tutorial](https://ansible.github.io/ansible-sign/rundown.html)
+explaining how to use the CLI for basic project signing and verification.

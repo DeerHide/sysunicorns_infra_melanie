@@ -1,0 +1,3 @@
+[console_scripts]
+bindep = bindep.__main__:main
+

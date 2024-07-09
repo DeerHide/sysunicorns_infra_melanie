@@ -1,0 +1,209 @@
+Metadata-Version: 2.1
+Name: ansible-navigator
+Version: 24.12.0
+Summary: A text-based user interface (TUI) for the Red Hat Ansible Automation Platform
+Author-email: "Bradley A. Thornton" <bthornto@redhat.com>
+Maintainer-email: Ansible by Red Hat <info@ansible.com>
+License: Apache
+Project-URL: homepage, https://github.com/ansible/ansible-navigator
+Project-URL: documentation, https://ansible-navigator.readthedocs.io/en/latest/
+Project-URL: repository, https://github.com/ansible/ansible-navigator
+Project-URL: changelog, https://github.com/ansible/ansible-navigator/releases
+Keywords: ansible
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development :: Testing
+Classifier: Topic :: Software Development :: Quality Assurance
+Classifier: Topic :: Utilities
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: ansible-builder>=3.0.0
+Requires-Dist: ansible-runner<3,>=2.3.1
+Requires-Dist: ansible-lint>=6.19.0
+Requires-Dist: jinja2
+Requires-Dist: jsonschema
+Requires-Dist: onigurumacffi<2,>=1.1.0
+Requires-Dist: pyyaml
+Requires-Dist: setuptools>=63.1.0; python_version >= "3.11"
+Requires-Dist: tzdata
+Provides-Extra: test
+Requires-Dist: ansible-core; extra == "test"
+Requires-Dist: coverage-enable-subprocess; extra == "test"
+Requires-Dist: coverage[toml]>=7.4.3; extra == "test"
+Requires-Dist: darglint; extra == "test"
+Requires-Dist: flake8-docstrings; extra == "test"
+Requires-Dist: libtmux>=0.36.0; extra == "test"
+Requires-Dist: pre-commit; extra == "test"
+Requires-Dist: pytest-env; extra == "test"
+Requires-Dist: pytest-mock; extra == "test"
+Requires-Dist: pytest-plus; extra == "test"
+Requires-Dist: pytest-subtests; extra == "test"
+Requires-Dist: pytest-xdist; extra == "test"
+Provides-Extra: docs
+Requires-Dist: mkdocs-ansible>=24.3.0; extra == "docs"
+
+# ansible-navigator
+
+[//]: # (DO-NOT-REMOVE-docs-intro-START)
+
+A text-based user interface (TUI) for Ansible.
+
+A demo of the interface can be found [on YouTube][YT demo].
+
+[YT demo]: https://www.youtube.com/watch?v=J9PBKi8ydi4
+
+[//]: # (DO-NOT-REMOVE-docs-intro-END)
+
+## Communication
+
+Refer to the
+[Talk to us](https://ansible.readthedocs.io/projects/navigator/contributing/community/#talk-to-us)
+section of the Contributing guide to find out how to get in touch with us.
+
+You can also find more information in the
+[Ansible communication guide](https://docs.ansible.com/ansible/devel/community/communication.html).
+
+## Contributing
+
+Any kind of contribution to this project is very welcome and appreciated,
+whether it is a documentation improvement, [bug report][issue],
+[pull request][pull request] review, or a patch.
+
+See the [Contributing guidelines][contributing guidelines] for details.
+
+[issue]:https://github.com/ansible/ansible-navigator/issues
+[pull request]:https://github.com/ansible/ansible-navigator/pulls
+[contributing guidelines]:
+https://ansible.readthedocs.io/projects/navigator/contributing/guidelines/
+
+## Code of Conduct
+
+Please see the official
+[Ansible Community Code of Conduct](https://docs.ansible.com/ansible/latest/community/code_of_conduct.html).
+
+## Quick start
+
+### Installing
+
+Getting started with ansible-navigator is as simple as:
+
+```
+pip3 install 'ansible-navigator[ansible-core]'
+ansible-navigator --help
+```
+
+(Users wishing to install within a virtual environment might find the relevant
+[Python documentation][Python venv doc] useful.)
+
+By default, ansible-navigator uses a container runtime (`podman` or `docker`,
+whichever it finds first) and runs Ansible within an execution environment
+(a pre-built container image which includes [ansible-core] along with a set
+of Ansible collections.)
+
+This default behavior can be disabled by starting ansible-navigator with
+`--execution-environment false`. In this case, Ansible and any collections
+needed must be installed manually on the system.
+
+[ansible-core]: https://docs.ansible.com/ansible-core/devel
+[Python venv doc]: https://docs.python.org/3/library/venv.html
+
+Additional `Linux`, `macOS` and `Windows with WSL2` installation
+instructions are available in the [Installation guide].
+
+[Installation guide]:
+https://ansible-navigator.readthedocs.io/installation/
+
+## Welcome
+
+When running `ansible-navigator` with no arguments, you will be presented with
+the *welcome page*. From this page, you can run playbooks, browse collections,
+explore inventories, read Ansible documentation, and more.
+
+A full list of key bindings can be viewed by typing `:help`.
+
+## Output modes
+
+There are two modes in which ansible-navigator can be run:
+
+* The **interactive** mode, which provides a curses-based user interface and
+  allows you to "zoom in" on data in real time, filter it, and navigate between
+  various Ansible components; and
+* The **stdout** mode, which does *not* use curses, and simply returns the
+  output to the terminal's standard output stream, as Ansible's commands
+  would.
+
+The **interactive** mode is the default and this default can be overwritten by
+passing `--mode stdout` (`-m stdout`) or setting `mode` in
+[configuration][settings documentation].
+
+[settings documentation]: https://ansible-navigator.readthedocs.io/settings/
+
+## Example commands
+
+All of ansible-navigator's features can be accessed from the *welcome page*
+described above, but as a shortcut, commands can also be provided directly as
+command-line arguments.
+
+Some examples:
+
+* Review and explore available collections: `ansible-navigator collections`
+* Review and explore current Ansible configuration: `ansible-navigator config`
+* Review and explore Ansible documentation:
+  `ansible-navigator doc ansible.netcommon.cli_command`
+* Review execution environment images available locally:
+  `ansible-navigator images`
+* Review and explore an inventory:
+  `ansible-navigator inventory -i inventory.yaml`
+* Run and explore a playbook:
+  `ansible-navigator run site.yaml -i inventory.yaml`
+
+Or using the **stdout** mode described above:
+
+* Show the current Ansible configuration:
+  `ansible-navigator config dump -m stdout`
+* Show documentation: `ansible-navigator doc sudo -t become  -m stdout`
+
+... and so on. A full list of subcommands and their relation to Ansible
+commands can be found in the [subcommand documentation].
+
+[subcommand documentation]:
+https://ansible-navigator.readthedocs.io/subcommands/
+
+## Configuring ansible-navigator
+
+There are several ways to configure ansible-navigator and users and projects
+are free to choose the most convenient method for them. The full hierarchy of
+how various configuration sources are applied can be found in the FAQ mentioned
+below.
+
+Of note, projects making use of ansible-navigator can include a project-wide
+configuration file with the project. If one is not found, ansible-navigator
+will look for a user-specific configuration file in the user's home directory.
+Details about this can be found in the [settings documentation].
+
+## Frequently Asked Questions (FAQ)
+
+We maintain a [list of common questions][FAQ] which provides a good
+resource to check if something is tripping you up. We also encourage additions
+to this document for the greater community!
+
+[FAQ]: https://ansible-navigator.readthedocs.io/faq/
+
+## License
+
+ansible-navigator is released under the Apache License version 2. See the
+[LICENSE] file for more details.
+
+[LICENSE]: https://github.com/ansible/ansible-navigator/blob/main/LICENSE
