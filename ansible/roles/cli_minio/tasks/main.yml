@@ -1,0 +1,39 @@
+---
+
+- name: Create minio directory
+  ansible.builtin.file:
+    path: /opt/minio/
+    state: directory
+    owner: deerhide-operator
+    group: deerhide-operator
+    mode: '0755'
+  become: true
+
+- name: Found and register "arch"
+  ansible.builtin.command:
+    cmd: dpkg --print-architecture
+  become: true
+  register: archi
+  changed_when: false
+
+- name: Get MinioClient
+  ansible.builtin.get_url:
+    url: https://dl.min.io/client/mc/release/linux-{{ archi.stdout }}/mc
+    dest: /opt/minio/
+    owner: deerhide-operator
+    group: deerhide-operator
+    mode: '0755'
+  become: true
+
+- name: Link mc to /usr/local/bin
+  ansible.builtin.file:
+    src: /opt/minio/mc
+    dest: /usr/local/bin/mc
+    state: link
+  become: true
+
+- name: Check MinioClient version
+  ansible.builtin.command:
+    cmd: mc --version
+  become: true
+  changed_when: false
