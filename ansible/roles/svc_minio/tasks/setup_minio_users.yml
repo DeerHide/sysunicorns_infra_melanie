@@ -1,0 +1,30 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_minio/tasks/setup_minio_users.yml
+# This file contains the tasks to create deerhide-operator users for Minio
+
+- name: Create alias melanie
+  ansible.builtin.command:
+    cmd: mc alias set melanie http://172.16.20.10:9000 {{ melanie_minio_root_user }} {{ melanie_minio_root_password }}
+  become: true
+  changed_when: false
+
+- name: Generate random password
+  ansible.builtin.set_fact:
+    minio_pass_mirage: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_letters', 'digits'], length=15) }}"
+    minio_pass_nakou: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_letters', 'digits'], length=15) }}"
+    minio_pass_tom: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_letters', 'digits'], length=15) }}"
+    minio_user_mirage: "mirage"
+    minio_user_nakou: "nakou"
+    minio_user_tom: "tom"
+  become: true
+
+- name: Add random password to users
+  ansible.builtin.command:
+    cmd: mc admin user add melanie {{ item.username }} {{ item.password }}
+  become: true
+  changed_when: false
+  loop:
+    - { username: "{{ minio_user_mirage }}", password: "{{ minio_pass_mirage }}" }
+    - { username: "{{ minio_user_nakou }}", password: "{{ minio_pass_nakou }}" }
+    - { username: "{{ minio_user_tom }}", password: "{{ minio_pass_tom }}" }
