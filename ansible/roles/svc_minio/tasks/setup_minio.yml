@@ -48,8 +48,8 @@
       - name: "{{ docker_network_private }}"
         ipv4_address: "{{ minio_ip }}"
     env:
-      MINIO_ROOT_USER: 'root'
-      MINIO_ROOT_PASSWORD: 'rootgroot'
+      MINIO_ROOT_USER: "{{ melanie_minio_root_user }}"
+      MINIO_ROOT_PASSWORD: "{{ melanie_minio_root_password }}"
     volumes:
       - "{{ minio_data_dir }}:/data"
     recreate: true
