@@ -14,8 +14,9 @@ vault_volumes_file_dir: "{{ docker_volumes_dir }}/{{ vault_volumes_file_dir_name
 
 vault_docker_container_name: svc_vault
 vault_docker_ip: "172.16.20.100"
+vault_docker_port: "8200"
 
 # TODO: Switch to the SSL version of the vault once the certificate is in place
 vault_shell_addr: "http://127.0.0.1"
 vault_shell_port: "8200"
-vault_initialize_pgp_keys: "/opt/operator/operator-gpg/keys/miragecentury-workstation.pgp,/opt/operator/operator-gpg/keys/nakou.pgp,/opt/operator/operator-gpg/keys/tom.pgp" # noqa: yaml[line-length]
+vault_initialize_pgp_keys: "/opt/operator/operator-gpg/keys/miragecentury-workstation.pgp,/opt/operator/operator-gpg/keys/nakou.pgp,/opt/operator/operator-gpg/keys/tom.pgp,/opt/operator/host-gpg" # noqa: yaml[line-length]
