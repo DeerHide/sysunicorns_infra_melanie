@@ -1,0 +1,48 @@
+---
+# code: language=ansible
+# Path: ansible/roles/deerhide_users/tasks/generate_host_pgp.yml
+
+- name: Deploy gpg.conf
+  ansible.builtin.copy:
+    src: "templates/gpg.conf.j2"
+    dest: "/home/deerhide-operator/.gnupg/gpg.conf"
+    mode: "0755"
+    owner: deerhide-operator
+    group: deerhide-operator
+
+- name: Deploy gpg-agent.conf
+  ansible.builtin.copy:
+    src: "templates/gpg-agent.conf.j2"
+    dest: "/home/deerhide-operator/.gnupg/gpg-agent.conf"
+    mode: "0755"
+    owner: deerhide-operator
+    group: deerhide-operator
+
+- name: Deploy gen-key-script
+  ansible.builtin.template:
+    src: "templates/gen-key-script.j2"
+    dest: "/opt/operator/gen-key-script"
+    mode: "0755"
+    owner: deerhide-operator
+    group: deerhide-operator
+
+- name: Generate the host PGP key # noqa: command-instead-of-shell
+  ansible.builtin.shell:
+    executable: "/bin/bash"
+    cmd: |
+      set -eo pipefail
+      echo RELOADAGENT | gpg-connect-agent
+      echo {{ host_gpg_passphrase }} | gpg --batch --passphrase-fd 0 --gen-key /opt/operator/gen-key-script
+  args:
+    creates: "/opt/operator/host-gpg"
+  register: host_gpg_key
+  changed_when: host_gpg_key.rc == 0
+
+- name: Expose in /opt/operator the host PGP key
+  ansible.builtin.shell:
+    executable: "/bin/bash"
+    cmd: "gpg --armor --export {{ ansible_hostname }}@deerhide.run > /opt/operator/host-gpg"
+  args:
+    creates: "/opt/operator/host-gpg"
+  register: host_gpg_key
+  changed_when: host_gpg_key.rc == 0

@@ -1,0 +1,16 @@
+---
+# code: language=ansible
+# Path: ansible/roles/deerhide_users/tasks/facts/check_if_gpg_host_as_been_generated.yml
+
+- name: Check if the host PGP key has been generated
+  ansible.builtin.shell:
+    executable: "/bin/bash"
+    cmd: "set -eo pipefail && [[ $(gpg --list-secret-keys | grep -c {{ ansible_hostname }}@deerhide.run) -eq 1 ]]"
+  register: gpg_key_exists
+  changed_when: false
+  failed_when: false
+
+- name: Set fact if the host PGP key has been generated
+  ansible.builtin.set_fact:
+    gpg_key_exists: "{{ gpg_key_exists.rc | int == 0 }}"
+  changed_when: false

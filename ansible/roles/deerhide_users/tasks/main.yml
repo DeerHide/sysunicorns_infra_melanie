@@ -11,5 +11,14 @@
 - name: Include setup_operator_user.yml
   ansible.builtin.include_tasks: setup_operator_users.yml
 
+# GPG
+
 - name: Import deploy_operator_pgp.yml
-  ansible.builtin.import_tasks: deploy_operator_pgp.yml
+  ansible.builtin.import_tasks: gpg/deploy_operator_pgp.yml
+
+- name: Import check_if_gpg_host_as_been_generated.yml
+  ansible.builtin.import_tasks: facts/check_if_gpg_host_as_been_generated.yml
+
+- name: Import generate_host_pgp.yml
+  ansible.builtin.import_tasks: gpg/generate_host_pgp.yml
+  when: gpg_key_exists == false # noqa: literal-compare

@@ -46,7 +46,7 @@
     single_branch: true
     dest: /opt/operator/operator-gpg
     version: main
-    accept_newhostkey: true
+    accept_hostkey: true
     key_file: "/home/deerhide-operator/.ssh/github_operator-gpg_deploy_key"
   become: true
   become_user: deerhide-operator
