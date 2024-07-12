@@ -47,8 +47,7 @@
 - name: Wait for the vault to be ready
   ansible.builtin.wait_for:
     host: "{{ vault_docker_ip }}"
-    port: 8200
+    port: "{{ vault_docker_port }}"
     state: started
     delay: 5
     timeout: 240
-  delegate_to: localhost
