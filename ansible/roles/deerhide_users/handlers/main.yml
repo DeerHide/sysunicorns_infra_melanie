@@ -6,6 +6,12 @@
 - name: Import the operator's PGP key
   ansible.builtin.shell: "gpg --import /opt/operator/operator-gpg/keys/*"
   become: true
-  become_user: deerhide-operator
+  become_user: "{{ item }}"
   register: import_operator_gpg
   changed_when: true
+  with_items:
+    - "root"
+    - "deerhide-operator"
+    - "deerhide-operator-tom4897"
+    - "deerhide-operator-miragecentury"
+    - "deerhide-operator-nakou"
