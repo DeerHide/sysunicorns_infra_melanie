@@ -1,0 +1,34 @@
+- name: Delegate to localhost to send the unseal keys to the operators
+  ansible.builtin.shell: # noqa: command-instead-of-shell
+    executable: /bin/bash
+    cmd: |
+      set -eo pipefail
+      echo "{{ item }}" | base64 -d | gpg --decrypt
+  changed_when: false
+  failed_when: false
+  register: unseal_operators_keys
+  delegate_to: localhost
+  with_items:
+    - "{{ svc_vault_unseal_key_0_mirage }}"
+    - "{{ svc_vault_unseal_key_1_nakou }}"
+    - "{{ svc_vault_unseal_key_2_tom }}"
+
+- name: Set Successfull uncrypt
+  ansible.builtin.set_fact:
+    svc_vault_unseal_key_operator: "{{ unseal_operators_keys | community.general.json_query(query_str) }}" # noqa: jinja[invalid]
+  vars:
+    query_str: "results[?rc == to_number('0')].stdout"
+  when: svc_vault_initialized
+
+- name: Debug the unseal operators keys
+  ansible.builtin.debug:
+    var: svc_vault_unseal_key_operator
+
+- name: Decrypt Host unseal key
+  ansible.builtin.shell: # noqa: command-instead-of-shell
+    executable: /bin/bash
+    cmd: |
+      set -eo pipefail
+      echo "{{ svc_vault_unseal_key_3_host }}" | base64 -d | gpg --decrypt
+  changed_when: false
+  register: unseal_host_key
