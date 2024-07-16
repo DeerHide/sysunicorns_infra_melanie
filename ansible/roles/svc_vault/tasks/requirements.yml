@@ -15,3 +15,15 @@
   with_items:
     - root
     - deerhide-operator
+
+# It's required on the target machine to be able to use the json_query module
+# https://blog.networktocode.com/post/ansible-filtering-json-query/
+- name: Install Python lib for hashi_vault
+  ansible.builtin.pip:
+    name: jmespath
+    state: latest # noqa: package-latest
+  become: true
+  become_user: "{{ item }}"
+  with_items:
+    - root
+    - deerhide-operator
