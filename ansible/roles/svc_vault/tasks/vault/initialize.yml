@@ -61,3 +61,26 @@
         text:
           type: mrkdwn
           text: "*Unseal Key 3 (Host):* ```echo \"{{ svc_vault_unseal_key_3_host }}\" | base64 -d | gpg --decrypt```"
+
+- name: Create the unseal keys directory
+  ansible.builtin.file:
+    state: directory
+    path: "{{ vault_unseal_keys_dir }}"
+    mode: "0700"
+    owner: "root"
+    group: "root"
+  become: true
+
+- name: Store the unseal keys
+  ansible.builtin.template:
+    src: "templates/unseal_key.asc.j2"
+    dest: "{{ vault_unseal_keys_dir }}/unseal_key_{{ item.name }}.asc"
+    mode: "0400"
+    owner: "root"
+    group: "root"
+  with_items:
+    - {"key": "{{ svc_vault_unseal_key_0_mirage }}", "name": "operator_mirage"}
+    - {"key": "{{ svc_vault_unseal_key_1_nakou }}", "name": "operator_nakou"}
+    - {"key": "{{ svc_vault_unseal_key_2_tom }}", "name": "operator_tom"}
+    - {"key": "{{ svc_vault_unseal_key_3_host }}", "name": "host"}
+  become: true
