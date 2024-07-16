@@ -11,6 +11,7 @@ vault_volumes_logs_dir_name: svc_vault_logs
 vault_volumes_logs_dir: "{{ vault_volumes_dir }}/{{ vault_volumes_logs_dir_name }}"
 vault_volumes_file_dir_name: svc_vault_file
 vault_volumes_file_dir: "{{ vault_volumes_dir }}/{{ vault_volumes_file_dir_name }}"
+vault_unseal_keys_dir: "{{ vault_volumes_dir }}/unseal_keys"
 
 vault_docker_container_name: svc_vault
 vault_docker_ip: "172.16.20.100"
