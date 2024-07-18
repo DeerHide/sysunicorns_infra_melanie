@@ -28,3 +28,99 @@
     - { username: "{{ minio_user_mirage }}", password: "{{ minio_pass_mirage }}" }
     - { username: "{{ minio_user_nakou }}", password: "{{ minio_pass_nakou }}" }
     - { username: "{{ minio_user_tom }}", password: "{{ minio_pass_tom }}" }
+
+- name: Create file with password for each users
+  ansible.builtin.copy:
+    dest: "/tmp/minio_ID_{{ item.username }}.txt"
+    content: |
+      Username: {{ item.username }} | Password: {{ item.password }}
+    owner: deerhide-operator
+    group: deerhide-operator
+    mode: '0666'
+  become: true
+  loop:
+    - { username: "{{ minio_user_mirage }}", password: "{{ minio_pass_mirage }}" }
+    - { username: "{{ minio_user_nakou }}", password: "{{ minio_pass_nakou }}" }
+    - { username: "{{ minio_user_tom }}", password: "{{ minio_pass_tom }}" }
+
+- name: Import GPG Public keys # noqa: command-instead-of-shell
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: gpg --import /opt/operator/operator-gpg/keys/*
+  become: false
+  become_user: "{{ item }}"
+  changed_when: true
+  with_items:
+    - "root"
+    - "deerhide-operator"
+    - "deerhide-operator-tom4897"
+    - "deerhide-operator-miragecentury"
+    - "deerhide-operator-nakou"
+
+- name: Check GPG Public keys # noqa: command-instead-of-shell
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: gpg --list-public-keys --keyid-format=long
+  become: false
+  become_user: "{{ item }}"
+  changed_when: true
+  with_items:
+    - "root"
+    - "deerhide-operator"
+    - "deerhide-operator-tom4897"
+    - "deerhide-operator-miragecentury"
+    - "deerhide-operator-nakou"
+
+- name: Encrypt file with credentials # noqa: command-instead-of-shell
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: gpg --trust-model always -e --armor -r {{ item.userid }} -o /tmp/minio_ID_{{ item.username }}.asc /tmp/minio_ID_{{ item.username }}.txt
+  failed_when: false
+  changed_when: false
+  loop:
+    - { userid: "{{ melanie_gpg_userid_mirage }}", username: "{{ minio_user_mirage }}" }
+    - { userid: "{{ melanie_gpg_userid_nakou }}", username: "{{ minio_user_nakou }}" }
+    - { userid: "{{ melanie_gpg_userid_tom }}", username: "{{ minio_user_tom }}" }
+
+- name: Copy content of encrypted file for Mirage # noqa: command-instead-of-shell
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: cat /tmp/minio_ID_{{ minio_user_mirage }}.asc
+  changed_when: false
+  register: encrypt_mirage
+
+- name: Copy content of encrypted file for Nakou # noqa: command-instead-of-shell
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: cat /tmp/minio_ID_{{ minio_user_nakou }}.asc
+  changed_when: false
+  register: encrypt_nakou
+
+- name: Copy content of encrypted file for Tom # noqa: command-instead-of-shell
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: cat /tmp/minio_ID_{{ minio_user_tom }}.asc
+  changed_when: false
+  register: encrypt_tom
+
+- name: Use the blocks API
+  community.general.slack:
+    token: "{{ slack_token }}"
+    channel: "@{{ item.userid }}"
+    username: Melanie_Ansible
+    blocks:
+      - type: section
+        text:
+          type: mrkdwn
+          text: |-
+            This is a test for {{ item.username }}
+            Send me a PM if you receive it
+            Sorry for spam, i will try to be good O_-
+            ----------Minio user and pass----------
+            ```
+            {{ item.encrypt }}
+            ```
+  loop:
+    - { userid: "{{ slack_mirage }}", username: "{{ minio_user_mirage }}", encrypt: "{{ encrypt_mirage.stdout }}" }
+    - { userid: "{{ slack_nakou }}", username: "{{ minio_user_nakou }}", encrypt: "{{ encrypt_nakou.stdout }}" }
+    - { userid: "{{ slack_tom }}", username: "{{ minio_user_tom }}", encrypt: "{{ encrypt_tom.stdout }}" }
