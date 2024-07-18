@@ -58,3 +58,11 @@
       fluentd-address: "127.0.0.1:24224"
       tag: "svc_minio"
   become: true
+
+- name: Wait for the minio to be ready
+  ansible.builtin.wait_for:
+    host: "{{ minio_ip }}"
+    port: 9000
+    state: started
+    delay: 5
+    timeout: 240
