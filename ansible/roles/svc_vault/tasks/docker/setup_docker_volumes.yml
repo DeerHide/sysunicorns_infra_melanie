@@ -2,48 +2,50 @@
 # language: ansible
 # Path: ansible/roles/svc_vault/tasks/setup_docker_volumes.yml
 
-# NOTE : Directories are created with root ownership and 700 permissions
-# to ensure that only the root user can access the data
-# We can see later how to improve this by using a dedicated user for Vault
-# or other solutions
+# Notice : Due to a behavior of the Vault Image, the directories must be created
+# but will be always modified by the Vault container with the correct permissions
+# and ownership for the Vault user inside the container
 
 # Create directories for Vault volumes
-
 - name: Create a main directory for all Vault Volumes
   ansible.builtin.file:
     name: "{{ vault_volumes_dir }}"
     state: directory
-    mode: "700"
-    owner: "root"
-    group: "root"
+    owner: "deerhide-operator"
+    group: "deerhide-operator"
+    permissions: "700"
   become: true
+  changed_when: false # noqa: ansible-lint See Notice above
 
-- name: Create docker_volume for Vault data
+- name: Create docker_volume directory for Vault data
   ansible.builtin.file:
     name: "{{ vault_volumes_file_dir }}"
     state: directory
-    mode: "700"
-    owner: "root"
-    group: "root"
+    owner: "deerhide-operator"
+    group: "deerhide-operator"
+    permissions: "700"
   become: true
+  changed_when: false # noqa: ansible-lint See Notice above
 
-- name: Create docker_volume for Vault config
+- name: Create docker_volume directory for Vault config
   ansible.builtin.file:
     name: "{{ vault_volumes_config_dir }}"
     state: directory
-    mode: "700"
-    owner: "root"
-    group: "root"
+    owner: "deerhide-operator"
+    group: "deerhide-operator"
+    permissions: "700"
   become: true
+  changed_when: false # noqa: ansible-lint See Notice above
 
-- name: Create docker_volume for Vault logs
+- name: Create docker_volume directory for Vault logs
   ansible.builtin.file:
     name: "{{ vault_volumes_logs_dir }}"
     state: directory
-    mode: "700"
-    owner: "root"
-    group: "root"
+    owner: "deerhide-operator"
+    group: "deerhide-operator"
+    permissions: "700"
   become: true
+  changed_when: false # noqa: ansible-lint See Notice above
 
 # Deploy the configuration file for Vault
 
@@ -51,9 +53,7 @@
   ansible.builtin.template:
     src: "templates/config.json.j2"
     dest: "{{ vault_volumes_config_dir }}/config.json"
-    owner: "root"
-    group: "root"
-    mode: "600"
+    permissions: "700"
   become: true
 
 # Create docker volumes for Vault
