@@ -1,0 +1,17 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_vault/tasks/facts/retrieve_root_token.yml
+# This task retrieves the root token from the vault
+
+- name: Retrieve the root token for each operators and host
+  ansible.builtin.shell: # noqa: command-instead-of-shell
+    executable: /bin/bash
+    cmd: |
+      set -eo pipefail
+      cat {{ vault_root_token_dir }}/vault_root_token_for_host.asc | gpg --decrypt --passphrase {{ host_gpg_passphrase }}
+  register: svc_vault_root_token_encrypted_for_host
+  changed_when: false
+
+- name: Set Fact for the root token
+  ansible.builtin.set_fact:
+    svc_vault_root_token: "{{ svc_vault_root_token_encrypted_for_host.stdout }}"
