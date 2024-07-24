@@ -19,8 +19,12 @@
   ansible.builtin.include_tasks: vault/initialize.yml
   when: svc_vault_initialized == false # noqa: literal-compare
 
-- name: Retrieve the root token
+- name: Include tasks from facts/retrieve_root_token.yml
   ansible.builtin.include_tasks: facts/retrieve_root_token.yml
+  when: svc_vault_initialized == true # noqa: literal-compare
+
+- name: Include tasks from facts/retrieve_unseal_keys.yml
+  ansible.builtin.include_tasks: facts/retrieve_unseal_keys.yml
   when: svc_vault_initialized == true # noqa: literal-compare
 
 - name: Include tasks from facts/retrieve_seal_state.yml

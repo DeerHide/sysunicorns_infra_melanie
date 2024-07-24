@@ -1,0 +1,56 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_vault/tasks/facts/retrieve_init_state.yml
+# This task retrieves the initialization status of the vault
+
+- name: Retrieve the unseal keys
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -eo pipefail
+      cat {{ vault_unseal_keys_dir }}/unseal_key_{{ item.name }}.asc
+  with_items:
+    - {"name": "operator_mirage"}
+    - {"name": "operator_nakou"}
+    - {"name": "operator_tom"}
+  register: unseal_keys
+  changed_when: false
+  become: true
+
+- name: Try to decrypt the unseal keys
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -eo pipefail
+      echo "{{ item.stdout }}" | base64 -d | gpg --decrypt
+  with_items: "{{ unseal_keys.results }}"
+  register: unseal_keys_decrypted
+  failed_when: false
+  changed_when: false
+  delegate_to: localhost
+
+- name: Retrive the host unseal key
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -eo pipefail
+      cat {{ vault_unseal_keys_dir }}/unseal_key_host.asc
+  register: host_unseal_key
+  changed_when: false
+  become: true
+
+- name: Try to decrypt the host unseal key
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -eo pipefail
+      echo "{{ host_unseal_key.stdout }}" | base64 -d | gpg --decrypt
+  register: host_unseal_key_decrypted
+  changed_when: false
+
+- name: Set Facts
+  ansible.builtin.set_fact:
+    svc_vault_unseal_key_operator: "{{ unseal_keys_decrypted | community.general.json_query(query_str) }}" # noqa: jinja[invalid]
+    svc_vault_unseal_key_host: "{{ host_unseal_key_decrypted.stdout }}"
+  vars:
+    query_str: "results[?rc == to_number('0')].stdout"
