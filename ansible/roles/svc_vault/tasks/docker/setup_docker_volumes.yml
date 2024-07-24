@@ -1,5 +1,5 @@
 ---
-# language: ansible
+# code: language=ansible
 # Path: ansible/roles/svc_vault/tasks/setup_docker_volumes.yml
 
 # Notice : Due to a behavior of the Vault Image, the directories must be created
@@ -13,7 +13,7 @@
     state: directory
     owner: "deerhide-operator"
     group: "deerhide-operator"
-    permissions: "700"
+    mode: "700"
   become: true
   changed_when: false # noqa: ansible-lint See Notice above
 
@@ -23,7 +23,7 @@
     state: directory
     owner: "deerhide-operator"
     group: "deerhide-operator"
-    permissions: "700"
+    mode: "700"
   become: true
   changed_when: false # noqa: ansible-lint See Notice above
 
@@ -33,7 +33,7 @@
     state: directory
     owner: "deerhide-operator"
     group: "deerhide-operator"
-    permissions: "700"
+    mode: "700"
   become: true
   changed_when: false # noqa: ansible-lint See Notice above
 
@@ -43,7 +43,7 @@
     state: directory
     owner: "deerhide-operator"
     group: "deerhide-operator"
-    permissions: "700"
+    mode: "700"
   become: true
   changed_when: false # noqa: ansible-lint See Notice above
 
@@ -53,7 +53,7 @@
   ansible.builtin.template:
     src: "templates/config.json.j2"
     dest: "{{ vault_volumes_config_dir }}/config.json"
-    permissions: "700"
+    mode: "700"
   become: true
 
 # Create docker volumes for Vault
