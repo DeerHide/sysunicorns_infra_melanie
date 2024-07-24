@@ -1,3 +1,9 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_vault/tasks/vault/unseal.yml
+
+# This task retrieves the vault unseal keys and apply them to the vault
+
 - name: Delegate to localhost to send the unseal keys to the operators
   ansible.builtin.shell: # noqa: command-instead-of-shell
     executable: /bin/bash
@@ -29,6 +35,21 @@
     executable: /bin/bash
     cmd: |
       set -eo pipefail
-      echo "{{ svc_vault_unseal_key_3_host }}" | base64 -d | gpg --decrypt
+      echo "{{ svc_vault_unseal_key_3_host }}" | base64 -d | gpg --decrypt --passphrase {{ host_gpg_passphrase }}
   changed_when: false
   register: unseal_host_key
+
+- name: Apply the unseal key to the Vault
+  ansible.builtin.shell: # noqa: command-instead-of-shell
+    executable: /bin/bash
+    cmd: "vault operator unseal {{ item }}"
+  environment:
+    "VAULT_ADDR": "{{ vault_shell_addr }}:{{ vault_shell_port }}"
+  with_items:
+    - "{{ svc_vault_unseal_key_operator }}"
+    - "{{ unseal_host_key.stdout }}"
+  changed_when: false
+
+# After unsealing the vault, we need to retrieve the seal status
+- name: Include the task to retrieve the seal status
+  ansible.builtin.include_tasks: facts/retrieve_seal_state.yml
