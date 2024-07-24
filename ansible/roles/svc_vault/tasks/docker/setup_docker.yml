@@ -23,9 +23,9 @@
     state: started
     restart_policy: always
     volumes:
-      - "{{ vault_volumes_file_dir }}:/vault/file"
-      - "{{ vault_volumes_config_dir }}:/vault/config"
-      - "{{ vault_volumes_logs_dir }}:/vault/logs"
+      - "{{ vault_volumes_file_dir_name }}:/vault/file"
+      - "{{ vault_volumes_config_dir_name }}:/vault/config"
+      - "{{ vault_volumes_logs_dir_name }}:/vault/logs"
     ipc_mode: "private"
     capabilities:
       - IPC_LOCK
