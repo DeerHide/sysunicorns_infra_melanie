@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# set -euo pipefail
+set -euo pipefail
 
 function on_melanie() {
   ssh melanie.localunicorns.info -C "$@"
