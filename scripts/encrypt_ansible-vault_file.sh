@@ -17,7 +17,7 @@ fi
 # Check if the ANSIBLE_VAULT_PASSWORD_FILE environment variable is set
 if [[ -z "${ANSIBLE_VAULT_PASSWORD_FILE}" ]]
 then
-  echo -e "$ROUGE ANSIBLE_VAULT_PASSWORD_FILE is not set $NC"
+  echo -e "$RED ANSIBLE_VAULT_PASSWORD_FILE is not set $NC"
   exit 1
 fi
 
