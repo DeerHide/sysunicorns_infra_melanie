@@ -1,0 +1,170 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_vault/tasks/vault_initialize.yml
+# This task initializes the vault and send the unseal keys to the operators
+
+
+- name: Initialize the vault
+  ansible.builtin.shell: # noqa: command-instead-of-shell
+    cmd: "vault operator init -key-shares=4 -key-threshold=2 -pgp-keys={{ vault_initialize_pgp_keys }} -non-interactive -format=json"
+  environment:
+    "VAULT_ADDR": "{{ vault_shell_addr }}:{{ vault_shell_port }}"
+  register: vault_init
+  changed_when: true
+
+- name: Debug the vault init
+  ansible.builtin.debug:
+    var: vault_init
+
+# Order of the unseal keys is important and link to the order of the PGP keys in vault_initialize_pgp_keys
+- name: Set the vault root token as a fact
+  ansible.builtin.set_fact:
+    svc_vault_root_token: "{{ vault_init.stdout | from_json | community.general.json_query('root_token') }}"
+    svc_vault_unseal_key_1_mirage: "{{ vault_init.stdout | from_json | community.general.json_query('unseal_keys_b64[1]') }}"
+    svc_vault_unseal_key_2_nakou: "{{ vault_init.stdout | from_json | community.general.json_query('unseal_keys_b64[2]') }}"
+    svc_vault_unseal_key_3_tom: "{{ vault_init.stdout | from_json | community.general.json_query('unseal_keys_b64[3]') }}"
+    svc_vault_unseal_key_0_host: "{{ vault_init.stdout | from_json | community.general.json_query('unseal_keys_b64[0]') }}"
+    svc_vault_initialized: true
+
+- name: Send the unseal keys to the operators
+  community.general.slack:
+    token: "{{ slack_token }}"
+    channel: "{{ slack_channel }}"
+    username: "Ansible - role: svc_vault"
+    icon_url: "https://grafana.com/media/solutions/vault-monitor/vault-logo.png"
+    blocks:
+      - type: header
+        text:
+          type: plain_text
+          text: "Vault Unseal Keys"
+      - type: context
+        elements:
+          - type: "image"
+            image_url: "https://grafana.com/media/solutions/vault-monitor/vault-logo.png"
+            alt_text: "notifications"
+          - type: plain_text
+            text: "From {{ ansible_nodename }}/{{ ansible_hostname }} with svc_vault initialization"
+      - type: divider
+      - type: section
+        text:
+          type: mrkdwn
+          text: "*Unseal Key 0 (Host):* ```echo \"{{ svc_vault_unseal_key_0_host }}\" | base64 -d | gpg --decrypt```"
+      - type: section
+        text:
+          type: mrkdwn
+          text: "*Unseal Key 1 (Mirage):* ```echo \"{{ svc_vault_unseal_key_1_mirage }}\" | base64 -d | gpg --decrypt```"
+      - type: section
+        text:
+          type: mrkdwn
+          text: "*Unseal Key 2 (Nakou):* ```echo \"{{ svc_vault_unseal_key_2_nakou }}\" | base64 -d | gpg --decrypt```"
+      - type: section
+        text:
+          type: mrkdwn
+          text: "*Unseal Key 3 (Tom):* ```echo \"{{ svc_vault_unseal_key_3_tom }}\" | base64 -d | gpg --decrypt```"
+
+
+- name: Create the unseal keys directory
+  ansible.builtin.file:
+    state: directory
+    path: "{{ vault_unseal_keys_dir }}"
+    mode: "0700"
+    owner: "root"
+    group: "root"
+  become: true
+
+- name: Store the unseal keys
+  ansible.builtin.template:
+    src: "templates/unseal_key.asc.j2"
+    dest: "{{ vault_unseal_keys_dir }}/unseal_key_{{ item.name }}.asc"
+    mode: "0400"
+    owner: "root"
+    group: "root"
+  with_items:
+    - {"key": "{{ svc_vault_unseal_key_1_mirage }}", "name": "operator_mirage"}
+    - {"key": "{{ svc_vault_unseal_key_2_nakou }}", "name": "operator_nakou"}
+    - {"key": "{{ svc_vault_unseal_key_3_tom }}", "name": "operator_tom"}
+    - {"key": "{{ svc_vault_unseal_key_0_host }}", "name": "host"}
+  become: true
+
+- name: Create the root token directory
+  ansible.builtin.file:
+    path: "{{ vault_root_token_dir }}"
+    state: directory
+    mode: "0700"
+    owner: "deerhide-operator"
+    group: "deerhide-operator"
+  become: true
+
+- name: Encrypt and Store the Root Token
+  ansible.builtin.shell: # noqa: command-instead-of-shell
+    executable: /bin/bash
+    cmd: |
+      set -euo pipefail
+      echo {{ svc_vault_root_token }} | \
+      gpg --encrypt \
+        --trust-model always \
+        --recipient {{ item.recipient }} \
+        --armor \
+        --output {{ vault_root_token_dir }}/vault_root_token_for_{{ item.name }}.asc
+  with_items:
+    - {"recipient": "F50248309FC43A259270D1A0DAB7DCCFB13CF9A9", "name": "operator_mirage"}
+    - {"recipient": "238DE74C314457997C3DBFDAD2A5A914F5B1519A", "name": "operator_nakou"}
+    - {"recipient": "0203F9151ED6A45ED7149B2642F221CCCE0F32FD", "name": "operator_tom"}
+    - {"recipient": "188023BD2932E6061587670937F3F1D00BE38070", "name": "host"} # Must be the host's PGP key ID
+  changed_when: false
+
+- name: Retrieve the root token for each operators and host
+  ansible.builtin.shell: # noqa: command-instead-of-shell
+    executable: /bin/bash
+    cmd: "cat {{ vault_root_token_dir }}/vault_root_token_for_{{ item.name }}.asc"
+  with_items:
+    - {"name": "operator_mirage"}
+    - {"name": "operator_nakou"}
+    - {"name": "operator_tom"}
+    - {"name": "host"}
+  register: svc_vault_root_token_encrypted
+  changed_when: false
+
+- name: Debug the root token
+  ansible.builtin.debug:
+    var: svc_vault_root_token_encrypted
+
+- name: Send the root token to the operators
+  community.general.slack:
+    token: "{{ slack_token }}"
+    channel: "{{ slack_channel }}"
+    username: "Ansible - role: svc_vault"
+    icon_url: "https://grafana.com/media/solutions/vault-monitor/vault-logo.png"
+    blocks:
+      - type: header
+        text:
+          type: plain_text
+          text: "Vault Root Token"
+      - type: context
+        elements:
+          - type: "image"
+            image_url: "https://grafana.com/media/solutions/vault-monitor/vault-logo.png"
+            alt_text: "notifications"
+          - type: plain_text
+            text: "From {{ ansible_nodename }}/{{ ansible_hostname }} with svc_vault initialization"
+      - type: divider
+      - type: section
+        text:
+          type: mrkdwn
+          text: "*Root Token (Host):* ```echo \"{{ svc_vault_root_token_encrypted.results[0].stdout }}\" | gpg --decrypt```"
+      - type: section
+        text:
+          type: mrkdwn
+          text: "*Root Token (Mirage):* ```echo \"{{ svc_vault_root_token_encrypted.results[1].stdout }}\" | gpg --decrypt```"
+      - type: section
+        text:
+          type: mrkdwn
+          text: "*Root Token (Nakou):* ```echo \"{{ svc_vault_root_token_encrypted.results[2].stdout }}\" | gpg --decrypt```"
+      - type: section
+        text:
+          type: mrkdwn
+          text: "*Root Token (Tom):* ```echo \"{{ svc_vault_root_token_encrypted.results[3].stdout }}\" | gpg --decrypt```"
+  changed_when: false
+
+- name: Include the task to retrieve the init status
+  ansible.builtin.include_tasks: facts/retrieve_init_state.yml

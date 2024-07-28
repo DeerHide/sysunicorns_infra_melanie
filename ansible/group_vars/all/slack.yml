@@ -1,0 +1,5 @@
+---
+# code: language=yaml
+# Path: ansible/group_vars/all/slack.yml
+
+slack_channel: "C078SSDKMPE"

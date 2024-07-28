@@ -23,9 +23,9 @@
     state: started
     restart_policy: always
     volumes:
-      - "{{ vault_volumes_file_dir }}:/vault/file"
-      - "{{ vault_volumes_config_dir }}:/vault/config"
-      - "{{ vault_volumes_logs_dir }}:/vault/logs"
+      - "{{ vault_volumes_file_dir_name }}:/vault/file"
+      - "{{ vault_volumes_config_dir_name }}:/vault/config"
+      - "{{ vault_volumes_logs_dir_name }}:/vault/logs"
     ipc_mode: "private"
     capabilities:
       - IPC_LOCK
@@ -43,3 +43,11 @@
       fluentd-address: "127.0.0.1:24224"
       tag: "svc_vault"
   become: true
+
+- name: Wait for the vault to be ready
+  ansible.builtin.wait_for:
+    host: "{{ vault_docker_ip }}"
+    port: "{{ vault_docker_port }}"
+    state: started
+    delay: 5
+    timeout: 240
