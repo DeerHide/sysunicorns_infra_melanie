@@ -41,7 +41,7 @@
 
 - name: Clone the operator's PGP key
   ansible.builtin.git:
-    repo: ssh://git@github.com/DeerHide/operator-gpg.git
+    repo: "{{ deerhide_gpg_repo }}"
     depth: 1
     single_branch: true
     dest: /opt/operator/operator-gpg
