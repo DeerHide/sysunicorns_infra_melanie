@@ -32,9 +32,9 @@
         svc_factorio_gameserver_name: "{{ svc_factorio_payplug_name }}"
         svc_factorio_docker_container_name: "svc_factorio_payplug"
         svc_factorio_docker_port: "35197"
-- name: Rasp's playbook
-  hosts:
-    - rasp
-  roles:
-    - role: svc_docker
-    - role: deerhide_users
+# - name: Rasp's playbook
+#   hosts:
+#     - rasp
+#   roles:
+#     - role: svc_docker
+#     - role: deerhide_users
