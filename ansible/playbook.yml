@@ -4,20 +4,20 @@
   hosts:
     - melanie
   roles:
-    - role: cli_vault
-    - role: cli_minio
-    - role: svc_docker
-    - role: svc_fluentd
-    - role: svc_traefik
+    # - role: cli_vault
+    # - role: cli_minio
+    # - role: svc_docker
+    # - role: svc_fluentd
+    # - role: svc_traefik
     - role: svc_minio
-    - role: svc_coredns
-    - role: svc_prometheus
-    - role: svc_node_exporter
-    - role: deerhide_users
+    # - role: svc_coredns
+    # - role: svc_prometheus
+    # - role: svc_node_exporter
+    # - role: deerhide_users
 
-- name: Rasp's playbook
-  hosts:
-    - rasp
-  roles:
-    - role: svc_docker
-    - role: deerhide_users
+# - name: Rasp's playbook
+#   hosts:
+#     - rasp
+#   roles:
+#     - role: svc_docker
+#     - role: deerhide_users
