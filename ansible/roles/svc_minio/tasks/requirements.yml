@@ -1,0 +1,23 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_minio/tasks/requirements.yml
+# Install the requirements for the svc_minio role
+
+# It's required on the target machine to be able to use the json_query module
+# https://blog.networktocode.com/post/ansible-filtering-json-query/
+- name: Install "jmespath"
+  ansible.builtin.pip:
+    name: jmespath
+    state: latest # noqa: package-latest
+  become: true
+  become_user: "{{ item }}"
+  with_items:
+    - root
+    - deerhide-operator
+
+- name: Install "jq"
+  ansible.builtin.apt:
+    name: jq
+    state: latest # noqa: package-latest
+    update_cache: true
+  become: true
