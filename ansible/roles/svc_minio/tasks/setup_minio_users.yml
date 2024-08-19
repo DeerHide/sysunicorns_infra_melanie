@@ -3,220 +3,73 @@
 # Path: ansible/roles/svc_minio/tasks/setup_minio_users.yml
 # This file contains the tasks to create deerhide-operator users for Minio
 
-- name: Import and Check GPG public keys
-  block:
-    - name: Import GPG Public keys # noqa: command-instead-of-shell
-      ansible.builtin.shell:
-        executable: /bin/bash
-        cmd: gpg --import /opt/operator/operator-gpg/keys/*
-      become: false
-      become_user: "{{ item }}"
-      changed_when: false
-      with_items:
-        - "root"
-        - "deerhide-operator"
-        - "deerhide-operator-tom4897"
-        - "deerhide-operator-miragecentury"
-        - "deerhide-operator-nakou"
-
-    - name: Check GPG Public keys # noqa: command-instead-of-shell
-      ansible.builtin.shell:
-        executable: /bin/bash
-        cmd: gpg --list-public-keys --keyid-format=long
-      become: false
-      become_user: "{{ item }}"
-      changed_when: false
-      with_items:
-        - "root"
-        - "deerhide-operator"
-        - "deerhide-operator-tom4897"
-        - "deerhide-operator-miragecentury"
-        - "deerhide-operator-nakou"
-
-- name: Check and create alias if needed
-  block:
-    - name: Check melanie alias if exists
-      ansible.builtin.command:
-        cmd: mc alias list melanie
-      changed_when: false
-      register: minio_alias_melanie
-
-    - name: Create alias melanie if don't exists
-      ansible.builtin.command:
-        cmd: mc alias set melanie http://172.16.20.10:9000 {{ melanie_minio_root_user }} {{ melanie_minio_root_password }}
-      changed_when: false
-      when: minio_alias_melanie.stdout.find('melanie') == -1
-
 - name: Check list of users in minio
-  ansible.builtin.command:
-    cmd: mc admin user list melanie
+  ansible.builtin.shell:
+    cmd: |
+      set -eo pipefail
+      mc admin user list melanie --json | jq -s .
+    executable: /bin/bash
   changed_when: false
   register: minio_users_list
 
-- name: Creation of minio users if they don't exists
-  block:
-    - name: Set fact and generate password
-      ansible.builtin.set_fact:
-        users:
-          - { name: "mirage", gpg_userid: "{{ melanie_gpg_userid_mirage }}", absent: "{{ 'mirage' not in minio_users_list.stdout }}",
-              password: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_letters', 'digits'], length=15) }}" }
-          - { name: "nakou", gpg_userid: "{{ melanie_gpg_userid_nakou }}", absent: "{{ 'nakou' not in minio_users_list.stdout }}",
-              password: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_letters', 'digits'], length=15) }}" }
-          - { name: "tom", gpg_userid: "{{ melanie_gpg_userid_tom }}", absent: "{{ 'tom' not in minio_users_list.stdout }}",
-              password: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_letters', 'digits'], length=15) }}" }
-          - { name: "nuc", gpg_userid: "{{ melanie_gpg_userid_tom }}", absent: "{{ 'nuc' not in minio_users_list.stdout }}",
-              password: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_letters', 'digits'], length=15) }}" }
-      become: true
+- name: Set fact and generate password
+  ansible.builtin.set_fact:
+    svc_minio_users:
+      - { name: "mirage", gpg_userid: "{{ melanie_gpg_userid_mirage }}", userid: "{{ slack_mirage }}",
+          present: "{{ minio_users_list.stdout | from_json | community.general.json_query(check_mirage) | bool }}",
+          password: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_letters', 'digits'], length=15) }}" } # noqa: jinja[invalid]
+      - { name: "nakou", gpg_userid: "{{ melanie_gpg_userid_nakou }}", userid: "{{ slack_nakou }}",
+          present: "{{ minio_users_list.stdout | from_json | community.general.json_query(check_nakou) | bool }}",
+          password: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_letters', 'digits'], length=15) }}" } # noqa: jinja[invalid]
+      - { name: "tom", gpg_userid: "{{ melanie_gpg_userid_tom }}", userid: "{{ slack_tom }}",
+          present: "{{ minio_users_list.stdout | from_json | community.general.json_query(check_tom) | bool }}",
+          password: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_letters', 'digits'], length=15) }}" } # noqa: jinja[invalid]
+  vars:
+    check_mirage: "[?status==`success`] | contains([].accessKey, `mirage`)"
+    check_nakou: "[?status==`success`] | contains([].accessKey, `nakou`)"
+    check_tom: "[?status==`success`] | contains([].accessKey, `tom`)"
 
-    - name: Create minio users
-      ansible.builtin.command:
-        cmd: mc admin user add melanie {{ item.name }} {{ item.password }}
-      become: true
-      changed_when: false
-      when: item.absent
-      loop: "{{ users }}"
+- name: Create minio users
+  ansible.builtin.command:
+    cmd: mc admin user add melanie {{ item.name }} {{ item.password }}
+  become: true
+  changed_when: false
+  when: item.present is false
+  loop: "{{ svc_minio_users }}"
 
-    - name: Create file with password for each users
-      ansible.builtin.copy:
-        dest: "/tmp/minio_ID_{{ item.name }}.txt"
-        content: |
-          Username: {{ item.name }} | Password: {{ item.password }}
-        owner: deerhide-operator
-        group: deerhide-operator
-        mode: '0666'
-      become: true
-      when: item.absent
-      loop: "{{ users }}"
+- name: Encrypt file with credentials # noqa: command-instead-of-shell
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -eo pipefail
+      echo {{ item.password }} | gpg --trust-model always -e --armor -r {{ item.gpg_userid }}
+  changed_when: false
+  when: item.present is false
+  with_items: "{{ svc_minio_users }}"
+  register: gpg_encrypt_results
 
-    - name: Encrypt file with credentials # noqa: command-instead-of-shell
-      ansible.builtin.shell:
-        executable: /bin/bash
-        cmd: gpg --trust-model always -e --armor -r {{ item.gpg_userid }} -o /tmp/minio_ID_{{ item.name }}.asc /tmp/minio_ID_{{ item.name }}.txt
-      failed_when: false
-      changed_when: false
-      when: item.absent
-      loop: "{{ users }}"
+- name: Send encrypted file to each users with slack
+  community.general.slack:
+    token: "{{ slack_token }}"
+    channel: "@{{ item.item.userid }}"
+    username: Melanie_Minio_Ansible
+    blocks:
+      - type: section
+        text:
+          type: mrkdwn
+          text: |-
+            -----Minio credentials for {{ item.item.name }}-----
+            ```
+            {{ item.stdout }}
+            ```
+  when: item.item.present is false
+  with_items: "{{ gpg_encrypt_results.results }}"
 
-    - name: Check if crendential asc file is created # noqa: command-instead-of-shell
-      ansible.builtin.shell:
-        executable: /bin/bash
-        cmd: ls /tmp/minio_ID_*.asc
-      changed_when: false
-      failed_when: file_check == ""
-      register: file_check
-
-- name: Read and copy content of each encrypted users file
-  block:
-    - name: Check if credential exists
-      ansible.builtin.stat:
-        path: /tmp/minio_ID_mirage.asc
-      register: check_cred_0
-      changed_when: false
-      when: file_check
-
-    - name: Read and copy content of minio_ID_mirage.asc
-      ansible.builtin.shell:
-        executable: /bin/bash
-        cmd: cat /tmp/minio_ID_mirage.asc
-      register: encrypted_file_mirage
-      changed_when: false
-      when: check_cred_0.stat.exists
-
-    - name: Check if credential exists
-      ansible.builtin.stat:
-        path: /tmp/minio_ID_nakou.asc
-      register: check_cred_1
-      changed_when: false
-      when: file_check
-
-    - name: Read and copy content of minio_ID_nakou.asc
-      ansible.builtin.shell:
-        executable: /bin/bash
-        cmd: cat /tmp/minio_ID_nakou.asc
-      register: encrypted_file_nakou
-      changed_when: false
-      when: check_cred_1.stat.exists
-
-    - name: Check if credential exists
-      ansible.builtin.stat:
-        path: /tmp/minio_ID_tom.asc
-      register: check_cred_2
-      changed_when: false
-      when: file_check
-
-    - name: Read and copy content of minio_ID_tom.asc
-      ansible.builtin.shell:
-        executable: /bin/bash
-        cmd: cat /tmp/minio_ID_tom.asc
-      register: encrypted_file_tom
-      changed_when: false
-      when: check_cred_2.stat.exists
-
-    - name: Check if credential exists
-      ansible.builtin.stat:
-        path: /tmp/minio_ID_nuc.asc
-      register: check_cred_3
-      changed_when: false
-      when: file_check
-
-    - name: Read and copy content of minio_ID_nuc.asc
-      ansible.builtin.shell:
-        executable: /bin/bash
-        cmd: cat /tmp/minio_ID_nuc.asc
-      register: encrypted_file_nuc
-      changed_when: false
-      when: check_cred_3.stat.exists
-
-    - name: Set user fact for slack
-      ansible.builtin.set_fact:
-        slack:
-          - { name: "mirage", userid: "{{ slack_nakou }}", user_data: "{{ encrypted_file_mirage.stdout }}",
-              absent: "{{ 'mirage' not in minio_users_list.stdout }}", is_not_empty: "{{ encrypted_file_mirage.stdout | length > 0 }}" }
-          - { name: "nakou", userid: "{{ slack_nakou }}", user_data: "{{ encrypted_file_nakou.stdout }}",
-              absent: "{{ 'nakou' not in minio_users_list.stdout }}", is_not_empty: "{{ encrypted_file_nakou.stdout | length > 0 }}" }
-          - { name: "tom", userid: "{{ slack_nakou }}", user_data: "{{ encrypted_file_tom.stdout }}",
-              absent: "{{ 'tom' not in minio_users_list.stdout }}", is_not_empty: "{{ encrypted_file_tom.stdout | length > 0 }}" }
-          - { name: "nuc", userid: "{{ slack_nakou }}", user_data: "{{ encrypted_file_nuc.stdout }}",
-              absent: "{{ 'nuc' not in minio_users_list.stdout }}", is_not_empty: "{{ encrypted_file_nuc.stdout | length > 0 }}" }
-      # when: item.absent is true and item.is_not_empty
-      loop:
-        - "{{ users }}"
-        - { is_not_empty: "{{ encrypted_file_mirage.stdout | length > 0 }}" }
-        - { is_not_empty: "{{ encrypted_file_nakou.stdout | length > 0 }}" }
-        - { is_not_empty: "{{ encrypted_file_tom.stdout | length > 0 }}" }
-        - { is_not_empty: "{{ encrypted_file_nuc.stdout | length > 0 }}" }
-
-    - name: Ensure user data is not empty and user is absent
-      ansible.builtin.debug:
-        msg: "Processing user: {{ item.name }}"
-      when: item.absent and item.is_not_empty
-      loop: "{{ slack }}"
-
-- name: Send Encrypted file and remove tmp file
-  block:
-    - name: Send encrypted file to each users with slack
-      community.general.slack:
-        token: "{{ slack_token }}"
-        channel: "@{{ item.userid }}"
-        username: Melanie_Minio_Ansible
-        blocks:
-          - type: section
-            text:
-              type: mrkdwn
-              text: |-
-                -----Minio credentials for {{ item.name }}-----
-                ```
-                {{ item.user_data }}
-                ```
-      when: item.absent is true and item.is_not_empty
-      failed_when: file_check == ""
-      loop: "{{ slack }}"
-
-    - name: Remove credential file
-      ansible.builtin.shell:
-        executable: /bin/bash
-        cmd: rm /tmp/minio_ID_*
-      register: remove_tmp_minio_file
-      changed_when: false
-      failed_when: remove_tmp_minio_file == ""
-      become: true
+- name: Remove credential file
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: rm /tmp/minio_ID_*
+  register: remove_tmp_minio_file
+  changed_when: false
+  failed_when: remove_tmp_minio_file == ""
+  become: true
