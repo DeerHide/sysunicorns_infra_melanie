@@ -1,0 +1,34 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_minio/tasks/import_gpg_keys.yml
+# This file contains the tasks to import and check gpg keys
+
+- name: Import and Check GPG public keys
+  block:
+    - name: Import GPG Public keys # noqa: command-instead-of-shell
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: gpg --import /opt/operator/operator-gpg/keys/*
+      become: false
+      become_user: "{{ item }}"
+      changed_when: false
+      with_items:
+        - "root"
+        - "deerhide-operator"
+        - "deerhide-operator-tom4897"
+        - "deerhide-operator-miragecentury"
+        - "deerhide-operator-nakou"
+
+    - name: Check GPG Public keys # noqa: command-instead-of-shell
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: gpg --list-public-keys --keyid-format=long
+      become: false
+      become_user: "{{ item }}"
+      changed_when: false
+      with_items:
+        - "root"
+        - "deerhide-operator"
+        - "deerhide-operator-tom4897"
+        - "deerhide-operator-miragecentury"
+        - "deerhide-operator-nakou"
