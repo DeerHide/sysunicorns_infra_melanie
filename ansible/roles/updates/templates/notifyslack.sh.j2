@@ -4,7 +4,7 @@
 MESSAGE=$(sed -n -e '7'p -e '16,19'p $1)
 
 # Slack Webhook
-WEBHOOK_URL="https://hooks.slack.com/services/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"
+WEBHOOK_URL="{{ slack_webhook_url }}"
 
 # POST request to Slack webhook with subject from unattended-upgrade notification
 curl -X POST -H 'Content-type: application/json' --data '{"text":"'"${MESSAGE}"'"}' $WEBHOOK_URL
