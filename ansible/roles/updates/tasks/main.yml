@@ -1,8 +1,8 @@
 ---
 # code: language=ansible
-# Remove manual to prevent update for testing auto-update
-# To-do: uncomment after test
-# - include_tasks: manual.yml
+
+- name: Include manual.yml
+  ansible.builtin.include_tasks: manual.yml
 - name: Include setup_auto.yml
   ansible.builtin.include_tasks: setup_auto.yml
 - name: Include setup_notif.yml
