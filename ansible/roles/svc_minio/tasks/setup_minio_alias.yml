@@ -1,0 +1,18 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_minio/tasks/setup_minio_alias.yml
+# This file contains the tasks to create deerhide-operator alias for Minio
+
+- name: Check and create alias if needed
+  block:
+    - name: Check if melanie alias exists
+      ansible.builtin.command:
+        cmd: mc alias list
+      changed_when: false
+      register: minio_alias_list
+
+    - name: Create alias melanie if don't exists
+      ansible.builtin.command:
+        cmd: mc alias set melanie http://172.16.20.10:9000 {{ melanie_minio_root_user }} {{ melanie_minio_root_password }}
+      changed_when: true
+      when: minio_alias_list.stdout.find('melanie') == -1

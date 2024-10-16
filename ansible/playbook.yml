@@ -5,6 +5,7 @@
     - melanie
   roles:
     - role: cli_vault
+    - role: cli_minio
     - role: svc_docker
     - role: svc_fluentd
     - role: svc_traefik
@@ -15,9 +16,10 @@
     - role: deerhide_users
     - role: svc_vault
 
-- name: Rasp's playbook
-  hosts:
-    - rasp
-  roles:
-    - role: svc_docker
-    - role: deerhide_users
+
+# - name: Rasp's playbook
+#   hosts:
+#     - rasp
+#   roles:
+#     - role: svc_docker
+#     - role: deerhide_users
