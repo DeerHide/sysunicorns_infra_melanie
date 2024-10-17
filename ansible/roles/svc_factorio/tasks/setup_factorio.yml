@@ -32,10 +32,20 @@
     state: present
   become: true
 
+- name: Create directory for Factorio
+  ansible.builtin.file:
+    name: "{{ factorio_data_dir }}/factorio/config"
+    state: directory
+    mode: "700"
+    recurse: true
+    owner: "deerhide-operator"
+    group: "deerhide-operator"
+  become: true
+
 - name: Copy factorio config file to server
   ansible.builtin.template:
     src: templates/server-settings.json.j2
-    dest: /opt/factorio/config/server-settings.json
+    dest: "{{ factorio_data_dir }}/factorio/config/server-settings.json"
     mode: "0644"
   become: true
 
@@ -44,7 +54,7 @@
     name: svc_factorio
     image: "{{ factorio_docker_image_name }}:{{ factorio_docker_image_version }}"
     state: started
-    restart_policy: on-failure
+    restart_policy: always
     privileged: false
     ports:
       - "34197:34197/udp"
@@ -56,7 +66,6 @@
       LOAD_LATEST_SAVE: "true"
       SAVE_NAME: "_autosave1"
     volumes:
-      - /opt/factorio:/factorio
-      - ./server-settings.json:/server-settings.json
+      - "{{ factorio_data_dir }}/factorio:/factorio"
   become: true
   become_user: deerhide-operator
