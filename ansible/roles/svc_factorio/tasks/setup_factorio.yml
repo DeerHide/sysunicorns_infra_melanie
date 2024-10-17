@@ -1,0 +1,62 @@
+---
+# code: language=ansible
+
+- name: Pull Factorio image
+  community.docker.docker_image_pull:
+    name: "{{ factorio_docker_image_name }}"
+    tag: "{{ factorio_docker_image_version }}"
+    pull: always
+    timeout: 10
+    tls: true
+    tls_hostname: "{{ docker_registry_hostname }}"
+  become: true
+
+- name: Create directory for Factorio
+  ansible.builtin.file:
+    name: "{{ factorio_data_dir }}"
+    state: directory
+    mode: "700"
+    recurse: true
+    owner: "deerhide-operator"
+    group: "deerhide-operator"
+  become: true
+
+- name: Create docker_volume for factorio data
+  community.docker.docker_volume:
+    name: "{{ factorio_docker_volume_name }}"
+    driver: local
+    driver_options:
+      type: "none"
+      o: "bind"
+      device: "{{ factorio_data_dir }}"
+    state: present
+  become: true
+
+- name: Copy factorio config file to server
+  ansible.builtin.template:
+    src: templates/server-settings.json.j2
+    dest: /opt/factorio/config/server-settings.json
+    mode: "0644"
+  become: true
+
+- name: Create factorio container
+  community.docker.docker_container:
+    name: svc_factorio
+    image: "{{ factorio_docker_image_name }}:{{ factorio_docker_image_version }}"
+    state: started
+    restart_policy: on-failure
+    privileged: false
+    ports:
+      - "34197:34197/udp"
+    networks:
+      - name: "{{ docker_network_public }}"
+        ipv4_address: "{{ factorio_ip }}"
+    env:
+      GENERATE_NEW_SAVE: "true"
+      LOAD_LATEST_SAVE: "true"
+      SAVE_NAME: "_autosave1"
+    volumes:
+      - /opt/factorio:/factorio
+      - ./server-settings.json:/server-settings.json
+  become: true
+  become_user: deerhide-operator
