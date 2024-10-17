@@ -15,6 +15,7 @@
     - role: svc_node_exporter
     - role: deerhide_users
     - role: svc_vault
+    - role: svc_factorio
 
 - name: Rasp's playbook
   hosts:
