@@ -1,0 +1,11 @@
+---
+# code: language=ansible
+# Path: ansible/group_vars/all/factorio.yml
+# This file contains the variables for the Factorio service
+# For Factorio version refer to https://hub.docker.com/r/factoriotools/factorio
+factorio_data_dir_name: svc_factorio_data
+factorio_data_dir: "{{ docker_volumes_dir }}/{{ factorio_data_dir_name }}"
+factorio_docker_image_name: factoriotools/factorio
+factorio_docker_image_version: stable
+factorio_docker_volume_name: svc_factorio_data_volume
+factorio_ip: 172.16.100.100
