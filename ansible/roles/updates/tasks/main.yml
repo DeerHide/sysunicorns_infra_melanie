@@ -1,8 +1,9 @@
 ---
 # code: language=ansible
 
-- name: Include manual.yml
-  ansible.builtin.include_tasks: manual.yml
+# Only for debug or manual update
+# - name: Include manual.yml
+#   ansible.builtin.include_tasks: manual.yml
 - name: Include setup_auto.yml
   ansible.builtin.include_tasks: setup_auto.yml
 - name: Include setup_notif.yml
