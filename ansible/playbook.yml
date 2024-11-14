@@ -6,6 +6,7 @@
   roles:
     - role: updates
     - role: cli_vault
+    - role: cli_minio
     - role: svc_docker
     - role: svc_fluentd
     - role: svc_traefik
@@ -15,6 +16,7 @@
     - role: svc_node_exporter
     - role: deerhide_users
     - role: svc_vault
+
 
 - name: Rasp's playbook
   hosts:

@@ -3,3 +3,6 @@
 # Path: ansible/group_vars/all/slack.yml
 
 slack_channel: "C078SSDKMPE"
+slack_mirage: "U076WRF4GRK"
+slack_nakou: "U076T6095FG"
+slack_tom: "U076ZLXBE9H"

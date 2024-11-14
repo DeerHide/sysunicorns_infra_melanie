@@ -1,0 +1,75 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_minio/tasks/setup_minio_users.yml
+# This file contains the tasks to create deerhide-operator users for Minio
+
+- name: Check list of users in minio
+  ansible.builtin.shell:
+    cmd: |
+      set -eo pipefail
+      mc admin user list melanie --json | jq -s .
+    executable: /bin/bash
+  changed_when: false
+  register: minio_users_list
+
+- name: Set fact and generate password
+  ansible.builtin.set_fact:
+    svc_minio_users:
+      - { name: "mirage", gpg_userid: "{{ melanie_gpg_userid_mirage }}", userid: "{{ slack_mirage }}",
+          present: "{{ minio_users_list.stdout | from_json | community.general.json_query(check_mirage) | bool }}",
+          password: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_letters', 'digits'], length=15) }}", } # noqa: jinja[invalid]
+      - { name: "nakou", gpg_userid: "{{ melanie_gpg_userid_nakou }}", userid: "{{ slack_nakou }}",
+          present: "{{ minio_users_list.stdout | from_json | community.general.json_query(check_nakou) | bool }}",
+          password: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_letters', 'digits'], length=15) }}", } # noqa: jinja[invalid]
+      - { name: "tom", gpg_userid: "{{ melanie_gpg_userid_tom }}", userid: "{{ slack_tom }}",
+          present: "{{ minio_users_list.stdout | from_json | community.general.json_query(check_tom) | bool }}",
+          password: "{{ lookup('ansible.builtin.password', '/dev/null', chars=['ascii_letters', 'digits'], length=15) }}", } # noqa: jinja[invalid]
+  vars:
+    check_mirage: "[?status==`success`] | contains([].accessKey, `mirage`)"
+    check_nakou: "[?status==`success`] | contains([].accessKey, `nakou`)"
+    check_tom: "[?status==`success`] | contains([].accessKey, `tom`)"
+
+- name: Create minio users
+  ansible.builtin.command:
+    cmd: mc admin user add melanie {{ item.name }} {{ item.password }}
+  become: true
+  changed_when: false
+  when: item.present is false
+  loop: "{{ svc_minio_users }}"
+
+- name: Encrypt file with credentials # noqa: command-instead-of-shell
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: |
+      set -eo pipefail
+      echo {{ item.password }} | gpg --trust-model always -e --armor -r {{ item.gpg_userid }}
+  changed_when: false
+  when: item.present is false
+  with_items: "{{ svc_minio_users }}"
+  register: gpg_encrypt_results
+
+- name: Send encrypted file to each users with slack
+  community.general.slack:
+    token: "{{ slack_token }}"
+    channel: "@{{ item.item.userid }}"
+    username: Melanie_Minio_Ansible
+    blocks:
+      - type: section
+        text:
+          type: mrkdwn
+          text: |-
+            -----Minio credentials for {{ item.item.name }}-----
+            ```
+            {{ item.stdout }}
+            ```
+  when: item.item.present is false
+  with_items: "{{ gpg_encrypt_results.results }}"
+
+- name: Remove credential file
+  ansible.builtin.shell:
+    executable: /bin/bash
+    cmd: rm /tmp/minio_ID_*
+  register: remove_tmp_minio_file
+  changed_when: false
+  failed_when: remove_tmp_minio_file == ""
+  become: true
