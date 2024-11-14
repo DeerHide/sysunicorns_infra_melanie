@@ -17,9 +17,9 @@
     - role: svc_vault
 
 
-# - name: Rasp's playbook
-#   hosts:
-#     - rasp
-#   roles:
-#     - role: svc_docker
-#     - role: deerhide_users
+- name: Rasp's playbook
+  hosts:
+    - rasp
+  roles:
+    - role: svc_docker
+    - role: deerhide_users
