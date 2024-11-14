@@ -4,6 +4,7 @@
   hosts:
     - melanie
   roles:
+    - role: updates
     - role: cli_vault
     - role: cli_minio
     - role: svc_docker
