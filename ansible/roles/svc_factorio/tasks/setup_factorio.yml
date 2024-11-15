@@ -3,8 +3,8 @@
 
 - name: Pull Factorio image
   community.docker.docker_image_pull:
-    name: "{{ factorio_docker_image_name }}"
-    tag: "{{ factorio_docker_image_version }}"
+    name: "{{ svc_factorio_docker_image_name }}"
+    tag: "{{ svc_factorio_docker_image_version }}"
     pull: always
     timeout: 10
     tls: true
@@ -13,7 +13,7 @@
 
 - name: Create directory for Factorio
   ansible.builtin.file:
-    name: "{{ factorio_data_dir }}"
+    name: "{{ svc_factorio_data_dir }}"
     state: directory
     mode: "700"
     recurse: true
@@ -23,18 +23,18 @@
 
 - name: Create docker_volume for factorio data
   community.docker.docker_volume:
-    name: "{{ factorio_docker_volume_name }}"
+    name: "{{ svc_factorio_docker_volume_name }}"
     driver: local
     driver_options:
       type: "none"
       o: "bind"
-      device: "{{ factorio_data_dir }}"
+      device: "{{ svc_factorio_data_dir }}"
     state: present
   become: true
 
 - name: Create directory for Factorio
   ansible.builtin.file:
-    name: "{{ factorio_data_dir }}/config"
+    name: "{{ svc_factorio_data_dir }}/config"
     state: directory
     mode: "700"
     recurse: true
@@ -45,27 +45,28 @@
 - name: Copy factorio config file to server
   ansible.builtin.template:
     src: templates/server-settings.json.j2
-    dest: "{{ factorio_data_dir }}/config/server-settings.json"
+    dest: "{{ svc_factorio_data_dir }}/config/server-settings.json"
     mode: "0644"
   become: true
 
 - name: Create factorio container
   community.docker.docker_container:
-    name: svc_factorio
-    image: "{{ factorio_docker_image_name }}:{{ factorio_docker_image_version }}"
+    name: "{{ svc_factorio_docker_container_name }}"
+    image: "{{ svc_factorio_docker_image_name }}:{{ svc_factorio_docker_image_version }}"
     state: started
     restart_policy: always
     privileged: false
     ports:
-      - "34197:34197/udp"
+      - "{{ svc_factorio_docker_port }}:{{ svc_factorio_docker_port }}/udp"
     networks:
       - name: "{{ docker_network_public }}"
-        ipv4_address: "{{ factorio_ip }}"
+        ipv4_address: "{{ svc_factorio_ip }}"
     env:
+      PORT: "{{ svc_factorio_docker_port }}"
       GENERATE_NEW_SAVE: "true"
       LOAD_LATEST_SAVE: "true"
       SAVE_NAME: "_autosave1"
     volumes:
-      - "{{ factorio_docker_volume_name }}:/factorio"
+      - "{{ svc_factorio_docker_volume_name }}:/factorio"
   become: true
   become_user: deerhide-operator

@@ -15,8 +15,21 @@
     - role: svc_node_exporter
     - role: deerhide_users
     - role: svc_vault
+    # RAPAS Factorio Server (use the default values)
     - role: svc_factorio
-
+    # PayPlug Factorio Server (use override values)
+    - role: svc_factorio
+      vars:
+        svc_factorio_data_dir_name: svc_factorio_payplug_data
+        svc_factorio_data_dir: "{{ docker_volumes_dir }}/svc_factorio_payplug_data/factorio"
+        svc_factorio_docker_image_name: factoriotools/factorio
+        svc_factorio_docker_image_version: "stable"
+        svc_factorio_docker_volume_name: svc_factorio_payplug_data_volume
+        svc_factorio_ip: 172.16.100.101
+        svc_factorio_gameserver_password: "{{ svc_factorio_payplug_password }}"
+        svc_factorio_gameserver_name: "{{ svc_factorio_payplug_name }}"
+        svc_factorio_docker_container_name: "svc_factorio_payplug"
+        svc_factorio_docker_port: "35197"
 - name: Rasp's playbook
   hosts:
     - rasp
