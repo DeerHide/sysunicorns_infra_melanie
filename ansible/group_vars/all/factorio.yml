@@ -6,10 +6,7 @@
 svc_factorio_data_dir_name: svc_factorio_data
 svc_factorio_data_dir: "{{ docker_volumes_dir }}/{{ svc_factorio_data_dir_name }}/factorio"
 svc_factorio_docker_image_name: factoriotools/factorio
-# Note: Need to wait for the "stable" tag to be superior to 2.0.19 to switch back to it
-# Due to map migration issues
-# svc_factorio_docker_image_version: "stable"
-svc_factorio_docker_image_version: "2.0.19"
+svc_factorio_docker_image_version: "stable"
 svc_factorio_docker_volume_name: svc_factorio_data_volume
 svc_factorio_ip: 172.16.100.100
 svc_factorio_gameserver_password: "{{ gameserver_password }}"
