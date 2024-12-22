@@ -15,6 +15,7 @@
     - role: svc_node_exporter
     - role: deerhide_users
     - role: svc_vault
+    - role: svc_dex
     # RAPAS Factorio Server (use the default values)
     - role: svc_factorio
     # PayPlug Factorio Server (use override values)
