@@ -1,0 +1,31 @@
+
+issuer: http://{{ dex_docker_network_public_ip }}/dex
+
+storage:
+  type: sqlite3
+  config:
+    file: /var/dex/dex.db
+
+web:
+  http: 0.0.0.0:80
+
+connectors:
+- type: github
+  id: github
+  name: GitHub
+  config:
+    clientID: "{{ svc_dex_github_client_id }}"
+    clientSecret: "{{ svc_dex_github_client_secret }}"
+    redirectURI: "http://{{ dex_docker_network_public_ip }}/dex/callback"
+
+  orgs:
+    - name: {{ github_org }}
+      teams:
+        - maintainers
+        - operators
+
+  loadAllGroups: true
+
+  teamNameField: slug
+
+  useLoginAsID: true

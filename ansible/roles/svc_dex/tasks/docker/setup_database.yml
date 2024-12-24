@@ -1,0 +1,34 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_dex/tasks/setup_docker_database.yml
+# This task file is responsible for setting up the database directory and file for the Dex service.
+
+- name: Create database directory
+  ansible.builtin.file:
+    name: "{{ dex_db_dir }}"
+    state: directory
+    mode: "777"
+    recurse: true
+    owner: "deerhide-operator"
+    group: "deerhide-operator"
+  become: true
+
+- name: Create database file
+  ansible.builtin.file:
+    name: "{{ dex_db_dir }}/dex.db"
+    state: touch
+    mode: "777"
+    owner: "deerhide-operator"
+    group: "deerhide-operator"
+  become: true
+
+- name: Create docker_volume for Dex config
+  community.docker.docker_volume:
+    name: "{{ dex_docker_volume_db_name }}"
+    driver: local
+    driver_options:
+      type: "none"
+      o: "bind"
+      device: "{{ dex_db_dir }}"
+    state: present
+  become: true

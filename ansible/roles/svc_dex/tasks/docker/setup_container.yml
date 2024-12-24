@@ -1,0 +1,28 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_dex/tasks/setup_docker_container.yml
+# This file contains the tasks to create the Dex Docker container
+- name: Create a Dex container
+  community.docker.docker_container:
+    name: svc_dex
+    image: "{{ dex_docker_image_name }}:{{ dex_docker_image_version }}"
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ dex_docker_volume_config_name }}:/etc/dex"
+      - "{{ dex_docker_volume_db_name }}:/var/dex"
+    recreate: true
+    command: ["dex", "serve", "/etc/dex/config.yml"]
+    ports:
+      - "80"
+    networks:
+      - name: "{{ docker_network_public }}"
+        ipv4_address: "{{ dex_docker_network_public_ip }}"
+    log_driver: "fluentd"
+    log_options:
+      fluentd-address: "127.0.0.1:24224"
+      tag: "svc_dex"
+    env:
+      GITHUB_CLIENT_ID: "{{ svc_dex_github_client_id }}"
+      GITHUB_CLIENT_SECRET: "{{ svc_dex_github_client_secret }}"
+  become: true

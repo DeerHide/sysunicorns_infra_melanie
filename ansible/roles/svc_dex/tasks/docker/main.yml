@@ -1,0 +1,16 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_dex/tasks/main.yml
+# This file contains the docker related dex setup
+
+- name: Include pull docker image task
+  ansible.builtin.include_tasks: setup_image.yml
+
+- name: Include setup docker config task
+  ansible.builtin.include_tasks: setup_config.yml
+
+- name: Include setup docker database task
+  ansible.builtin.include_tasks: setup_database.yml
+
+- name: Include setup docker container task
+  ansible.builtin.include_tasks: setup_container.yml

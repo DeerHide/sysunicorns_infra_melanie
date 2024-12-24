@@ -1,0 +1,13 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_dex/tasks/setup_docker_image.yml
+# This file contains the tasks to pull the Dex Docker image
+- name: Pull dex image
+  community.docker.docker_image_pull:
+    name: "{{ dex_docker_image_name }}"
+    tag: "{{ dex_docker_image_version }}"
+    pull: always
+    timeout: 10
+    tls: true
+    tls_hostname: "{{ docker_registry_hostname }}"
+  become: true
