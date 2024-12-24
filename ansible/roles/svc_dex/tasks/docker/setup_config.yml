@@ -1,0 +1,35 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_dex/tasks/setup_docker_config.yml
+# This file contains
+# the tasks to setup the Dex Docker configuration
+
+- name: Create config directory
+  ansible.builtin.file:
+    name: "{{ dex_config_dir }}"
+    state: directory
+    mode: "555"
+    recurse: true
+    owner: "deerhide-operator"
+    group: "deerhide-operator"
+  become: true
+
+- name: Deploy Dex config file
+  ansible.builtin.template:
+    src: templates/config.yml.j2
+    dest: "{{ dex_config_dir }}/config.yml"
+    mode: "0555"
+    owner: "deerhide-operator"
+    group: "deerhide-operator"
+  become: true
+
+- name: Create docker_volume for Dex config
+  community.docker.docker_volume:
+    name: "{{ dex_docker_volume_config_name }}"
+    driver: local
+    driver_options:
+      type: "none"
+      o: "bind"
+      device: "{{ dex_config_dir }}"
+    state: present
+  become: true

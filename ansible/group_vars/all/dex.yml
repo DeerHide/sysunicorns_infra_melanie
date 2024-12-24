@@ -1,0 +1,23 @@
+---
+# code: language=ansible
+# Path: ansible/group_vars/all/dex.yml
+# This file contains the variables for the Dex service
+dex_docker_image_name: dexidp/dex
+dex_docker_image_version: latest
+
+# Base directory
+dex_base_dir_name: svc_dex
+dex_base_dir: "{{ docker_volumes_dir }}/{{ dex_base_dir_name }}"
+
+# Config directory
+dex_config_dir_name: svc_dex_config
+dex_config_dir: "{{ dex_base_dir }}/{{ dex_config_dir_name }}"
+dex_docker_volume_config_name: svc_dex_config_volume
+
+# Database directory
+dex_db_dir_name: svc_dex_db
+dex_db_dir: "{{ dex_base_dir }}/{{ dex_db_dir_name }}"
+dex_docker_volume_db_name: svc_dex_db_volume
+
+# Network
+dex_docker_network_public_ip: 172.16.100.102

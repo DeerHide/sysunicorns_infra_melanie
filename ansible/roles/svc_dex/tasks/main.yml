@@ -1,0 +1,7 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_dex/tasks/main.yml
+# This file contains the tasks for the Dex service
+
+- name: Include docker setup tasks
+  ansible.builtin.include_tasks: docker/main.yml
