@@ -2,6 +2,7 @@
 # code: language=yaml
 # Path: ansible/group_vars/all/slack.yml
 
+# Slack ID for members or channels
 slack_channel: "C078SSDKMPE"
 slack_mirage: "U076WRF4GRK"
 slack_nakou: "U076T6095FG"
