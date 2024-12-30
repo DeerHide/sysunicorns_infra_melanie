@@ -12,12 +12,7 @@
       become: false
       become_user: "{{ item }}"
       changed_when: false
-      with_items:
-        - "root"
-        - "deerhide-operator"
-        - "deerhide-operator-tom4897"
-        - "deerhide-operator-miragecentury"
-        - "deerhide-operator-nakou"
+      with_items: "{{ managed_users }}"
 
     - name: Check GPG Public keys # noqa: command-instead-of-shell
       ansible.builtin.shell:
@@ -26,9 +21,4 @@
       become: false
       become_user: "{{ item }}"
       changed_when: false
-      with_items:
-        - "root"
-        - "deerhide-operator"
-        - "deerhide-operator-tom4897"
-        - "deerhide-operator-miragecentury"
-        - "deerhide-operator-nakou"
+      with_items: "{{ managed_users }}"
