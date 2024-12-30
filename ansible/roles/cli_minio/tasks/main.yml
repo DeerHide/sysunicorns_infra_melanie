@@ -18,7 +18,7 @@
 
 - name: Get MinioClient
   ansible.builtin.get_url:
-    url: https://dl.min.io/client/mc/release/linux-{{ archi.stdout }}/mc
+    url: https://dl.min.io/client/mc/release/linux-{{ arch.stdout }}/mc
     dest: /opt/minio/
     owner: deerhide-operator
     group: deerhide-operator
