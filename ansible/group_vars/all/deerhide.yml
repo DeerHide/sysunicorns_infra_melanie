@@ -1,1 +1,8 @@
 deerhide_gpg_repo: ssh://git@github.com/DeerHide/operator-gpg.git
+
+managed_users:
+  - "root"
+  - "deerhide-operator"
+  - "deerhide-operator-tom4897"
+  - "deerhide-operator-miragecentury"
+  - "deerhide-operator-nakou"
