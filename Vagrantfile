@@ -33,6 +33,11 @@ Vagrant.configure("2") do |config|
     config.vm.define "melanie-dev" do |node|
     end
 
+    config.vm.provision "shell", inline: <<-SHELL
+        sudo apt-get update
+        sudo apt-get install -y python3-pip
+    SHELL
+
     config.vm.provision "ansible" do |ansible|
         ansible.playbook = "ansible/vagrant-playbook.yml"
         ansible.compatibility_mode = "2.0"
