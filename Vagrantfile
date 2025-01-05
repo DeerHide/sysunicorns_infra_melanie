@@ -25,8 +25,8 @@ Vagrant.configure("2") do |config|
         vb.customize ["modifyvm", :id, "--vrde", "off"]
         vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
         vb.customize ["modifyvm", :id, "--paravirt-provider", "hyperv"]
-        vb.customize ["modifyvm", :id, "--accelerate-3d", "on"]
         vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+        vb.customize ["modifyvm", :id, "--accelerate-3d", "on"]
         vb.customize ["modifyvm", :id, "--chipset", "ich9"]
     end
 
