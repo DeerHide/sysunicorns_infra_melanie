@@ -25,13 +25,18 @@ Vagrant.configure("2") do |config|
         vb.customize ["modifyvm", :id, "--vrde", "off"]
         vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
         vb.customize ["modifyvm", :id, "--paravirt-provider", "hyperv"]
-        vb.customize ["modifyvm", :id, "--accelerate-3d", "on"]
         vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+        vb.customize ["modifyvm", :id, "--accelerate-3d", "on"]
         vb.customize ["modifyvm", :id, "--chipset", "ich9"]
     end
 
     config.vm.define "melanie-dev" do |node|
     end
+
+    config.vm.provision "shell", inline: <<-SHELL
+        sudo apt-get update
+        sudo apt-get install -y python3-pip
+    SHELL
 
     config.vm.provision "ansible" do |ansible|
         ansible.playbook = "ansible/vagrant-playbook.yml"

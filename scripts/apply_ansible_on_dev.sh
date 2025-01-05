@@ -25,6 +25,6 @@ fi
 # Launch ansible playbook
 ansible-playbook \
     -i ${ANSIBLE_INVENTORY} \
-    --vault-id=default@ansible-vars.yml \
-    --vault-password-file="${ANSIBLE_VAULT_PASSWORD_FILE}" \
-    ./ansible/vagrant-playbook.yml
+    --vault-id="default@${ANSIBLE_VAULT_PASSWORD_FILE}" \
+    -e @ansible-vars.yml \
+    ./ansible/playbook.yml
