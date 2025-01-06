@@ -9,11 +9,14 @@
     # This role manage vagrant specificity
     - role: vagrant
     - role: updates
+    - role: deerhide_users
     - role: svc_docker
+    - role: svc_fluentd
     - role: svc_traefik
-    - role: svc_minio
     - role: svc_coredns
     - role: svc_prometheus
     - role: svc_node_exporter
+    - role: cli_vault
     - role: svc_vault
-    - role: deerhide_users
+    - role: cli_minio
+    - role: svc_minio
