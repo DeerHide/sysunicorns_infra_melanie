@@ -3,6 +3,8 @@
 - name: Melanie's playbook
   hosts:
     - melanie
+  vars:
+    host_recipient: 188023BD2932E6061587670937F3F1D00BE38070
   roles:
     - role: updates
     - role: cli_vault
