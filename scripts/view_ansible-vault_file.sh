@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+# Activate python virtualenv
+if [[ -d .venv ]]; then
+  source .venv/bin/activate
+fi
 
 # Colors
 RED='\033[0;31m'
