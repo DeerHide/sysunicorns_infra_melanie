@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Activate python virtualenv
+if [[ -d .venv ]]; then
+  source .venv/bin/activate
+fi
+
 # Re-Use vagrant inventory file
 ANSIBLE_INVENTORY=.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory
 
