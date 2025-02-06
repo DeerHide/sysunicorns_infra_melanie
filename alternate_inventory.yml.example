@@ -1,0 +1,1 @@
+melanie-dev ansible_host= ansible_port=2222 ansible_user='deerhide-operator' ansible_ssh_pass=''
