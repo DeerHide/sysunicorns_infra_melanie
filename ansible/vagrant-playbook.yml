@@ -5,6 +5,7 @@
     - melanie-dev
   vars:
     ansible_python_interpreter: auto
+    host_recipient: EB2EB13FC7BB5D5624F2F96DE1B4F0E6FD82F9CA
   roles:
     # This role manage vagrant specificity
     - role: vagrant
