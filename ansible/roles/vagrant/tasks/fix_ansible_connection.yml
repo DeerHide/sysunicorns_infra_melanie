@@ -1,0 +1,18 @@
+---
+# code: language=ansible
+
+# Set password for deerhide-operator
+- name: Set password for deerhide-operator
+  ansible.builtin.user:
+    name: deerhide-operator
+    password: "{{ deerhide_operator_password }}"
+    update_password: always
+  become: true
+
+# Add deerhide-operator to sudoers /etc/sudoers.d/deerhide-operator
+- name: Copy sudoers.d file from vagrant
+  ansible.builtin.template:
+    src: template/deerhide-operator.j2
+    dest: /etc/sudoers.d/deerhide-operator
+    mode: "0440"
+  become: true
