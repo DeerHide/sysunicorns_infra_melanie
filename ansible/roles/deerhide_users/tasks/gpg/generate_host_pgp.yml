@@ -2,21 +2,32 @@
 # code: language=ansible
 # Path: ansible/roles/deerhide_users/tasks/generate_host_pgp.yml
 
+- name: Ensure .gnupg exists
+  ansible.builtin.file:
+    path: "/home/deerhide-operator/.gnupg"
+    state: directory
+    mode: "0755"
+    owner: deerhide-operator
+    group: deerhide-operator
+  become: true
+
 - name: Deploy gpg.conf
-  ansible.builtin.copy:
+  ansible.builtin.template:
     src: "templates/gpg.conf.j2"
     dest: "/home/deerhide-operator/.gnupg/gpg.conf"
     mode: "0755"
     owner: deerhide-operator
     group: deerhide-operator
+  become: true
 
 - name: Deploy gpg-agent.conf
-  ansible.builtin.copy:
+  ansible.builtin.template:
     src: "templates/gpg-agent.conf.j2"
     dest: "/home/deerhide-operator/.gnupg/gpg-agent.conf"
     mode: "0755"
     owner: deerhide-operator
     group: deerhide-operator
+  become: true
 
 - name: Deploy gen-key-script
   ansible.builtin.template:
@@ -25,6 +36,7 @@
     mode: "0755"
     owner: deerhide-operator
     group: deerhide-operator
+  become: true
 
 - name: Generate the host PGP key # noqa: command-instead-of-shell
   ansible.builtin.shell:
