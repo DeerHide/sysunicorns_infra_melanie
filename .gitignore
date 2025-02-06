@@ -1,6 +1,9 @@
 .vagrant
 
+.venv
+
 # Env
 .env
 # Ansible Secrets
 .vault_pass.txt
+alternate_inventory.yml
