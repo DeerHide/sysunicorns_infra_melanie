@@ -20,10 +20,10 @@
 - name: Set the vault root token as a fact
   ansible.builtin.set_fact:
     svc_vault_root_token: "{{ vault_init.stdout | from_json | community.general.json_query('root_token') }}"
-    svc_vault_unseal_key_1_mirage: "{{ vault_init.stdout | from_json | community.general.json_query('unseal_keys_b64[1]') }}"
-    svc_vault_unseal_key_2_nakou: "{{ vault_init.stdout | from_json | community.general.json_query('unseal_keys_b64[2]') }}"
-    svc_vault_unseal_key_3_tom: "{{ vault_init.stdout | from_json | community.general.json_query('unseal_keys_b64[3]') }}"
-    svc_vault_unseal_key_0_host: "{{ vault_init.stdout | from_json | community.general.json_query('unseal_keys_b64[0]') }}"
+    svc_vault_unseal_key_2_mirage: "{{ vault_init.stdout | from_json | community.general.json_query('unseal_keys_b64[2]') }}"
+    svc_vault_unseal_key_3_nakou: "{{ vault_init.stdout | from_json | community.general.json_query('unseal_keys_b64[3]') }}"
+    svc_vault_unseal_key_0_tom: "{{ vault_init.stdout | from_json | community.general.json_query('unseal_keys_b64[0]') }}"
+    svc_vault_unseal_key_1_host: "{{ vault_init.stdout | from_json | community.general.json_query('unseal_keys_b64[1]') }}"
     svc_vault_initialized: true
 
 - name: Send the unseal keys to the operators
@@ -48,20 +48,19 @@
       - type: section
         text:
           type: mrkdwn
-          text: "*Unseal Key 0 (Host):* ```echo \"{{ svc_vault_unseal_key_0_host }}\" | base64 -d | gpg --decrypt```"
+          text: '*Unseal Key 1 (Host):* ```echo "{{ svc_vault_unseal_key_1_host }}" | base64 -d | gpg --decrypt```'
       - type: section
         text:
           type: mrkdwn
-          text: "*Unseal Key 1 (Mirage):* ```echo \"{{ svc_vault_unseal_key_1_mirage }}\" | base64 -d | gpg --decrypt```"
+          text: '*Unseal Key 2 (Mirage):* ```echo "{{ svc_vault_unseal_key_2_mirage }}" | base64 -d | gpg --decrypt```'
       - type: section
         text:
           type: mrkdwn
-          text: "*Unseal Key 2 (Nakou):* ```echo \"{{ svc_vault_unseal_key_2_nakou }}\" | base64 -d | gpg --decrypt```"
+          text: '*Unseal Key 3 (Nakou):* ```echo "{{ svc_vault_unseal_key_3_nakou }}" | base64 -d | gpg --decrypt```'
       - type: section
         text:
           type: mrkdwn
-          text: "*Unseal Key 3 (Tom):* ```echo \"{{ svc_vault_unseal_key_3_tom }}\" | base64 -d | gpg --decrypt```"
-
+          text: '*Unseal Key 0 (Tom):* ```echo "{{ svc_vault_unseal_key_0_tom }}" | base64 -d | gpg --decrypt```'
 
 - name: Create the unseal keys directory
   ansible.builtin.file:
@@ -80,10 +79,13 @@
     owner: "root"
     group: "root"
   with_items:
-    - {"key": "{{ svc_vault_unseal_key_1_mirage }}", "name": "operator_mirage"}
-    - {"key": "{{ svc_vault_unseal_key_2_nakou }}", "name": "operator_nakou"}
-    - {"key": "{{ svc_vault_unseal_key_3_tom }}", "name": "operator_tom"}
-    - {"key": "{{ svc_vault_unseal_key_0_host }}", "name": "host"}
+    - {
+        "key": "{{ svc_vault_unseal_key_2_mirage }}",
+        "name": "operator_mirage",
+      }
+    - { "key": "{{ svc_vault_unseal_key_3_nakou }}", "name": "operator_nakou" }
+    - { "key": "{{ svc_vault_unseal_key_0_tom }}", "name": "operator_tom" }
+    - { "key": "{{ svc_vault_unseal_key_1_host }}", "name": "host" }
   become: true
 
 - name: Create the root token directory
@@ -107,10 +109,22 @@
         --armor \
         --output {{ vault_root_token_dir }}/vault_root_token_for_{{ item.name }}.asc
   with_items:
-    - {"recipient": "F50248309FC43A259270D1A0DAB7DCCFB13CF9A9", "name": "operator_mirage"}
-    - {"recipient": "238DE74C314457997C3DBFDAD2A5A914F5B1519A", "name": "operator_nakou"}
-    - {"recipient": "0203F9151ED6A45ED7149B2642F221CCCE0F32FD", "name": "operator_tom"}
-    - {"recipient": "188023BD2932E6061587670937F3F1D00BE38070", "name": "host"} # Must be the host's PGP key ID
+    - {
+        "recipient": "F50248309FC43A259270D1A0DAB7DCCFB13CF9A9",
+        "name": "operator_mirage",
+      }
+    - {
+        "recipient": "B3027832F936D485AE300FFC29F66BD2B8675766",
+        "name": "operator_nakou",
+      }
+    - {
+        "recipient": "0203F9151ED6A45ED7149B2642F221CCCE0F32FD",
+        "name": "operator_tom",
+      }
+    - {
+        "recipient": "{{ host_recipient }}",
+        "name": "host",
+      } # Must be the host's PGP key ID
   changed_when: false
 
 - name: Retrieve the root token for each operators and host
@@ -118,10 +132,10 @@
     executable: /bin/bash
     cmd: "cat {{ vault_root_token_dir }}/vault_root_token_for_{{ item.name }}.asc"
   with_items:
-    - {"name": "operator_mirage"}
-    - {"name": "operator_nakou"}
-    - {"name": "operator_tom"}
-    - {"name": "host"}
+    - { "name": "operator_mirage" }
+    - { "name": "operator_nakou" }
+    - { "name": "operator_tom" }
+    - { "name": "host" }
   register: svc_vault_root_token_encrypted
   changed_when: false
 
@@ -151,19 +165,19 @@
       - type: section
         text:
           type: mrkdwn
-          text: "*Root Token (Host):* ```echo \"{{ svc_vault_root_token_encrypted.results[0].stdout }}\" | gpg --decrypt```"
+          text: '*Root Token (Host):* ```echo "{{ svc_vault_root_token_encrypted.results[1].stdout }}" | gpg --decrypt```'
       - type: section
         text:
           type: mrkdwn
-          text: "*Root Token (Mirage):* ```echo \"{{ svc_vault_root_token_encrypted.results[1].stdout }}\" | gpg --decrypt```"
+          text: '*Root Token (Mirage):* ```echo "{{ svc_vault_root_token_encrypted.results[2].stdout }}" | gpg --decrypt```'
       - type: section
         text:
           type: mrkdwn
-          text: "*Root Token (Nakou):* ```echo \"{{ svc_vault_root_token_encrypted.results[2].stdout }}\" | gpg --decrypt```"
+          text: '*Root Token (Nakou):* ```echo "{{ svc_vault_root_token_encrypted.results[3].stdout }}" | gpg --decrypt```'
       - type: section
         text:
           type: mrkdwn
-          text: "*Root Token (Tom):* ```echo \"{{ svc_vault_root_token_encrypted.results[3].stdout }}\" | gpg --decrypt```"
+          text: '*Root Token (Tom):* ```echo "{{ svc_vault_root_token_encrypted.results[0].stdout }}" | gpg --decrypt```'
   changed_when: false
 
 - name: Include the task to retrieve the init status
