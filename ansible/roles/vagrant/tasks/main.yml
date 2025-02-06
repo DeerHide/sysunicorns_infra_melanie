@@ -5,3 +5,5 @@
   ansible.builtin.include_tasks: docker.yml
 - name: Include bridged_network.yml
   ansible.builtin.include_tasks: bridged_network.yml
+- name: Include fix_ansible_connection.yml
+  ansible.builtin.include_tasks: fix_ansible_connection.yml
