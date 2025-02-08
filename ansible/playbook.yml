@@ -7,18 +7,18 @@
     host_recipient: 188023BD2932E6061587670937F3F1D00BE38070
   roles:
     - role: updates
-    - role: cli_vault
-    - role: cli_minio
+    - role: deerhide_users
     - role: svc_docker
     - role: svc_fluentd
     - role: svc_traefik
-    - role: svc_minio
     - role: svc_coredns
     - role: svc_prometheus
     - role: svc_node_exporter
-    - role: deerhide_users
+    - role: cli_vault
     - role: svc_vault
     - role: svc_dex
+    - role: cli_minio
+    - role: svc_minio
     # RAPAS Factorio Server (use the default values)
     - role: svc_factorio
     # PayPlug Factorio Server (use override values)
@@ -40,4 +40,3 @@
 #   roles:
 #     - role: svc_docker
 #     - role: deerhide_users
-
