@@ -78,13 +78,10 @@
     owner: "root"
     group: "root"
   with_items:
-    - {
-        "key": "{{ svc_vault_unseal_key_2_mirage }}",
-        "name": "operator_mirage",
-      }
-    - { "key": "{{ svc_vault_unseal_key_3_nakou }}", "name": "operator_nakou" }
-    - { "key": "{{ svc_vault_unseal_key_0_tom }}", "name": "operator_tom" }
-    - { "key": "{{ svc_vault_unseal_key_1_host }}", "name": "host" }
+    - { "key": "{{ svc_vault_unseal_key_2_mirage }}", "name": "operator_mirage", }
+    - { "key": "{{ svc_vault_unseal_key_3_nakou }}", "name": "operator_nakou", }
+    - { "key": "{{ svc_vault_unseal_key_0_tom }}", "name": "operator_tom", }
+    - { "key": "{{ svc_vault_unseal_key_1_host }}", "name": "host", }
   become: true
 
 - name: Create the root token directory
@@ -109,20 +106,20 @@
         --output {{ vault_root_token_dir }}/vault_root_token_for_{{ item.name }}.asc
   with_items:
     - {
-        "recipient": "F50248309FC43A259270D1A0DAB7DCCFB13CF9A9",
-        "name": "operator_mirage",
+      "recipient": "F50248309FC43A259270D1A0DAB7DCCFB13CF9A9",
+      "name": "operator_mirage",
       }
     - {
-        "recipient": "B3027832F936D485AE300FFC29F66BD2B8675766",
-        "name": "operator_nakou",
+      "recipient": "B3027832F936D485AE300FFC29F66BD2B8675766",
+      "name": "operator_nakou",
       }
     - {
-        "recipient": "0203F9151ED6A45ED7149B2642F221CCCE0F32FD",
-        "name": "operator_tom",
+      "recipient": "0203F9151ED6A45ED7149B2642F221CCCE0F32FD",
+      "name": "operator_tom",
       }
     - {
-        "recipient": "{{ host_recipient }}",
-        "name": "host", # Must be the host's PGP key ID
+      "recipient": "{{ host_recipient }}",
+      "name": "host", # Must be the host's PGP key ID
       }
   changed_when: false
 
