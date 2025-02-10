@@ -3,7 +3,6 @@
 # Path: ansible/roles/svc_vault/tasks/vault_initialize.yml
 # This task initializes the vault and send the unseal keys to the operators
 
-
 - name: Initialize the vault
   ansible.builtin.shell: # noqa: command-instead-of-shell
     cmd: "vault operator init -key-shares=4 -key-threshold=2 -pgp-keys={{ vault_initialize_pgp_keys }} -non-interactive -format=json"
@@ -123,8 +122,8 @@
       }
     - {
         "recipient": "{{ host_recipient }}",
-        "name": "host",
-      } # Must be the host's PGP key ID
+        "name": "host", # Must be the host's PGP key ID
+      }
   changed_when: false
 
 - name: Retrieve the root token for each operators and host
