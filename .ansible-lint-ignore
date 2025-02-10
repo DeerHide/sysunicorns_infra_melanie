@@ -1,0 +1,1 @@
+ansible/roles/svc_vault/tasks/vault/initialize.yml yaml[indentation] # disable yaml[indentation] rule
