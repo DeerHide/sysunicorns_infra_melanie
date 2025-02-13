@@ -1,6 +1,13 @@
 ---
 # code: language=ansible
 
+# Get current password hash for deerhide-operator
+- name: Get current password hash for deerhide-operator
+  ansible.builtin.shell: "grep '^deerhide-operator:' /etc/shadow | cut -d':' -f2"
+  register: current_password_hash
+  become: true
+  no_log: true
+
 # Set password for deerhide-operator
 - name: Set password for deerhide-operator
   ansible.builtin.user:
@@ -8,6 +15,7 @@
     password: "{{ deerhide_operator_password }}"
     update_password: always
   become: true
+  changed_when: current_password_hash.stdout != deerhide_operator_password
 
 # Add deerhide-operator to sudoers /etc/sudoers.d/deerhide-operator
 - name: Copy sudoers.d file from vagrant
