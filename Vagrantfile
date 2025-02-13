@@ -21,6 +21,7 @@ Vagrant.configure("2") do |config|
         vb.name = "melanie-dev"
         vb.memory = "4096"
         vb.cpus = 4
+        vb.check_guest_additions = false
         # VBox parameters for the customization: https://www.virtualbox.org/manual/ch08.html#vboxmanage-modifyvm
         vb.customize ["modifyvm", :id, "--vrde", "off"]
         vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
