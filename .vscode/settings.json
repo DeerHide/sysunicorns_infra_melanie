@@ -1,7 +1,12 @@
 {
-  "ansible.python.interpreterPath": ".venv/bin/python3",
   "editor.formatOnSave": true,
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
-  "pre-commit-helper.runOnSave": "all hooks"
+  "pre-commit-helper.runOnSave": "all hooks",
+  "ansible.python.interpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "ansible.ansible.reuseTerminal": true,
+  "ansible.ansible.path": ".venv/bin/ansible",
+  "ansible.validation.lint.path": ".venv/bin/ansible-lint",
+  "ansible.ansibleNavigator.path": ".venv/bin/ansible-navigator",
 }
