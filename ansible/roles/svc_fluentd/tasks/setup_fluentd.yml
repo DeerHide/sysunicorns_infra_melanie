@@ -67,7 +67,7 @@
     exposed_ports:
       - 24224
     ports:
-      - "127.0.0.1:24224:24224"
+      - "24224"
     networks:
       - name: "{{ docker_network_public }}"
         ipv4_address: "{{ fluentd_ip }}"

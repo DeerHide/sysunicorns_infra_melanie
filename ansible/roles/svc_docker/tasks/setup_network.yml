@@ -20,7 +20,13 @@
   community.docker.docker_network:
     name: private_docker_network
     state: present
-    internal: false
+    driver: bridge
+    driver_options:
+      com.docker.network.bridge.enable_ip_masquerade: true
+      com.docker.network.bridge.enable_icc: true
+      com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"
+      com.docker.network.bridge.name: private_network
+      com.docker.network.driver.mtu: 1500
     ipam_config:
       - subnet: 172.16.20.0/24
         gateway: 172.16.20.1
@@ -30,7 +36,13 @@
   community.docker.docker_network:
     name: public_docker_network
     state: present
-    internal: false
+    driver: bridge
+    driver_options:
+      com.docker.network.bridge.enable_ip_masquerade: true
+      com.docker.network.bridge.enable_icc: true
+      com.docker.network.bridge.host_binding_ipv4: "0.0.0.0"
+      com.docker.network.bridge.name: public_network
+      com.docker.network.driver.mtu: 1500
     ipam_config:
       - subnet: 172.16.100.0/24
         gateway: 172.16.100.1
