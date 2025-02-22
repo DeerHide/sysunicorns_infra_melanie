@@ -33,14 +33,14 @@
     exposed_ports:
       - "8200"
     ports:
-      - "127.0.0.1:8200:8200"
+      - "8200"
     recreate: true
     networks:
       - name: "{{ docker_network_private }}"
         ipv4_address: "{{ vault_docker_ip }}"
     log_driver: "fluentd"
     log_options:
-      fluentd-address: "127.0.0.1:24224"
+      fluentd-address: "{{ fluentd_ip }}:24224"
       tag: "svc_vault"
   become: true
 

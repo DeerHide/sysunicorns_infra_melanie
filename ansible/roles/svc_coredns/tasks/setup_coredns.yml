@@ -47,8 +47,8 @@
     exposed_ports:
       - 53
     ports:
-      - "127.0.0.1:53:53"
-      - "127.0.0.1:53:53/udp"
+      - "53"
+      - "53/udp"
     volumes:
       - "{{ coredns_data_dir }}:/data"
     recreate: true
@@ -57,6 +57,6 @@
         ipv4_address: "{{ coredns_ip }}"
     log_driver: "fluentd"
     log_options:
-      fluentd-address: "127.0.0.1:24224"
+      fluentd-address: "{{ fluentd_ip }}:24224"
       tag: "svc_coredns"
   become: true
