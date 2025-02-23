@@ -1,0 +1,14 @@
+---
+- name: Download clusterctl
+  ansible.builtin.get_url:
+    url: "https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.5.0/clusterctl-{{ ansible_system | lower }}-amd64"
+    dest: /usr/local/bin/clusterctl
+    mode: "0755"
+  become: true
+
+- name: Download talosctl
+  ansible.builtin.get_url:
+    url: "https://github.com/talos-systems/talos/releases/latest/download/talosctl-{{ ansible_system | lower }}-amd64"
+    dest: /usr/local/bin/talosctl
+    mode: "0755"
+  become: true

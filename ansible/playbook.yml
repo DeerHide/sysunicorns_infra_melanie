@@ -8,6 +8,8 @@
   roles:
     - role: updates
     - role: deerhide_users
+    - role: cli_kubectl
+    - role: cli_sidero
     - role: svc_docker
     - role: svc_fluentd
     - role: svc_traefik

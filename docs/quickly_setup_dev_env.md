@@ -1,4 +1,3 @@
-
 # Scripts
 
 ## Specific
@@ -25,14 +24,10 @@
 
 ```sh
 
-    # required for ansible
-    python3 -m pip install ansible
-
-    # required for pre-commit
-    pip3 install pre-commit
-
-    # required for ansible-lint
-    pip3 install ansible-dev-tools
-
+    ./scripts/install_ansible.sh
+    ./scripts/install_kube_took.sh # TODO: replace with ansible dev env
+    source .venv/bin/activate
+    pip install pre-commit
+    pre-commit install
 
 ```
