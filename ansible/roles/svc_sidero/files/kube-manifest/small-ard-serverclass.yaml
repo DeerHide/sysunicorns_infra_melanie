@@ -1,0 +1,12 @@
+apiVersion: metal.sidero.dev/v1alpha1
+kind: ServerClass
+metadata:
+  name: small-ard-serverclass
+spec:
+  selector:
+    matchLabels:
+      material-model: "r310"
+      alim-count: "2"
+  qualifiers:
+    cpu:
+      - manufacturer: "Intel"

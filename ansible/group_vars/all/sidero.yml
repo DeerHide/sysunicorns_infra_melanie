@@ -1,0 +1,6 @@
+---
+# code: language=ansible
+# Path: ansible/group_vars/all/factorio.yml
+# This file contains the variables for sidero
+
+svc_sidero_ip: 172.16.20.60

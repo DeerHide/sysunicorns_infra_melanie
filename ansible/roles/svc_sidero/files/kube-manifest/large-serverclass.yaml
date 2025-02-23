@@ -1,0 +1,11 @@
+apiVersion: metal.sidero.dev/v1alpha1
+kind: ServerClass
+metadata:
+  name: large-serverclass
+spec:
+  selector:
+    matchLabels:
+      cpu-count: "2"
+  qualifiers:
+    cpu:
+      - manufacturer: "Intel"

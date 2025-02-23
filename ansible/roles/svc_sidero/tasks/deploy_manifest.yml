@@ -1,0 +1,32 @@
+---
+# code: language=ansible
+
+- name: Create dir for kube-manifest
+  ansible.builtin.file:
+    path: /opt/sysunicorns/sidero/manifests
+    state: directory
+    mode: "0755"
+    owner: deerhide-operator
+    group: deerhide-operator
+  become: true
+
+- name: Deploy manifest to server
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /opt/sysunicorns/sidero/manifests
+    owner: deerhide-operator
+    group: deerhide-operator
+    mode: "0644"
+  with_items:
+    - kube-manifest/large-serverclass.yaml
+    - kube-manifest/small-ard-serverclass.yaml
+
+- name: Deploy manifests to server
+  kubernetes.core.k8s:
+    kubeconfig: /home/deerhide-operator/.kube/config
+    context: admin@sysunicorns-sidero
+    state: present
+    src: "{{ item }}"
+  with_items:
+    - /opt/sysunicorns/sidero/manifests/large-serverclass.yaml
+    - /opt/sysunicorns/sidero/manifests/small-ard-serverclass.yaml
