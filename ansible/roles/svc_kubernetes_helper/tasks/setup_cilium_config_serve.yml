@@ -1,0 +1,49 @@
+---
+# code: language=ansible
+
+- name: "Create Directory for Cilium Config Volume"
+  ansible.builtin.file:
+    path: "{{ svc_sidero_cilium_config_serve_dir }}"
+    state: directory
+    owner: deerhide-operator
+    group: deerhide-operator
+    mode: "0755"
+  become: true
+
+- name: "Copy Cilium Config Serve"
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ svc_sidero_cilium_config_serve_dir }}"
+    owner: deerhide-operator
+    group: deerhide-operator
+    mode: "0644"
+  loop:
+    - helm-cilium/cilium.yaml
+  become: true
+
+- name: "Create Docker Volume"
+  community.docker.docker_volume:
+    name: "{{ svc_sidero_cilium_config_serve_docker_volume_name }}"
+    driver: local
+    driver_options:
+      type: "none"
+      o: "bind"
+      device: "{{ svc_sidero_cilium_config_serve_dir }}"
+    state: present
+
+- name: "Create Cilium Config Serve Container"
+  community.docker.docker_container:
+    name: "{{ svc_sidero_cilium_config_serve_docker_container_name }}"
+    image: "{{ svc_sidero_cilium_config_serve_docker_image_name }}"
+    state: started
+    restart_policy: always
+    recreate: true
+    privileged: false
+    volumes:
+      - "{{ svc_sidero_cilium_config_serve_docker_volume_name }}:/usr/local/apache2/htdocs/"
+    networks:
+      - name: "{{ docker_network_private }}"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.svc_sidero_cilium_config_serve.rule: "Host(`static.host`)"
+      traefik.http.services.svc_sidero_cilium_config_serve.loadbalancer.server.port: "80"

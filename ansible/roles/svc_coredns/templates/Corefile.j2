@@ -1,6 +1,25 @@
-.:53 {
-    forward . 192.168.2.1
-    log
+deerhide.run {
+    hosts {
+        192.168.60.188  nut.melanie.deerhide.run
+        192.168.60.188  traefik.melanie.deerhide.run
+        192.168.60.188  static.melanie.deerhide.run
+        fallthrough
+    }
+}
+
+host {
+    hosts {
+        192.168.60.188  static.host
+        192.168.60.188  sysunicorns.kube.host
+        192.168.60.188  traefik.host
+        192.168.60.188  nut.host
+        fallthrough
+    }
+}
+
+. {
+    forward . 192.168.60.1
     errors
     cache
 }
+

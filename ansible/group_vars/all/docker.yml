@@ -3,6 +3,8 @@
 # Path: ansible/group_vars/all/docker.yml
 # This file contains the variables for the Docker service
 docker_registry_hostname: registry.hub.docker.com
+docker_quay_registry_hostname: quay.io
+docker_ghcr_registry_hostname: ghcr.io
 docker_volumes_dir: /var/docker_volumes
 docker_network_public: public_docker_network
 docker_network_private: private_docker_network

@@ -1,0 +1,48 @@
+---
+# code: language=ansible
+
+- name: "Create Directory for Haproxy Config Volume"
+  ansible.builtin.file:
+    path: "{{ svc_sidero_haproxy_config_serve_dir }}"
+    state: directory
+    owner: deerhide-operator
+    group: deerhide-operator
+    mode: "0755"
+  become: true
+
+- name: "Copy Haproxy Config Serve"
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ svc_sidero_haproxy_config_serve_dir }}"
+    owner: deerhide-operator
+    group: deerhide-operator
+    mode: "0644"
+  loop:
+    - haproxy/haproxy.cfg
+  become: true
+
+- name: "Create Docker Volume"
+  community.docker.docker_volume:
+    name: "{{ svc_sidero_haproxy_config_serve_docker_volume_name }}"
+    driver: local
+    driver_options:
+      type: "none"
+      o: "bind"
+      device: "{{ svc_sidero_haproxy_config_serve_dir }}"
+    state: present
+
+- name: "Create Haproxy Container"
+  community.docker.docker_container:
+    name: "{{ svc_sidero_haproxy_config_serve_docker_container_name }}"
+    image: "{{ svc_sidero_haproxy_config_serve_docker_image_name }}"
+    state: started
+    restart_policy: always
+    privileged: false
+    ports:
+      - "6443:6443"
+    volumes:
+      - "{{ svc_sidero_haproxy_config_serve_docker_volume_name }}:/usr/local/etc/haproxy"
+    networks:
+      - name: "{{ docker_network_private }}"
+    labels:
+      traefik.enable: "false"

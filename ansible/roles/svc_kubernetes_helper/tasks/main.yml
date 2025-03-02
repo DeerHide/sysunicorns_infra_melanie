@@ -1,0 +1,9 @@
+---
+# code: language=ansible
+
+- name: Include requirements.yml
+  ansible.builtin.include_tasks: requirements.yml
+- name: Include haproxy_for_kubeapi.yml
+  ansible.builtin.include_tasks: haproxy_for_kubeapi.yml
+- name: Include setup_cilium_config_serve
+  ansible.builtin.include_tasks: setup_cilium_config_serve.yml

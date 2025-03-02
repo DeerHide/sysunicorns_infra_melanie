@@ -16,26 +16,31 @@
   ansible.builtin.file:
     name: "{{ coredns_data_dir }}"
     state: directory
-    mode: "700"
+    mode: "777" # FIXME: find solution for UID/GID mismatch between host and container
     recurse: true
+    owner: "deerhide-operator"
+    group: "docker"
   become: true
 
 - name: Deploy CoreDNS Configuration to Host
   ansible.builtin.template:
     src: Corefile.j2
     dest: "{{ coredns_data_dir }}/Corefile"
-    mode: "600"
+    mode: "777" # FIXME: find solution for UID/GID mismatch between host and container
+    owner: "deerhide-operator"
+    group: "docker"
   become: true
 
 - name: Create docker_volume for CoreDNS data
   community.docker.docker_volume:
     name: "{{ coredns_docker_volume_name }}"
     driver: local
+    recreate: options-changed
     driver_options:
-      type: "none"
+      type: none
       o: "bind"
       device: "{{ coredns_data_dir }}"
-    state: present
+    state: absent
   become: true
 
 - name: Create a CoreDNS container
@@ -43,20 +48,20 @@
     name: svc_coredns
     image: "{{ coredns_docker_image_name }}:{{ coredns_docker_image_version }}"
     state: started
-    restart_policy: always
-    exposed_ports:
-      - 53
-    ports:
-      - "53"
-      - "53/udp"
+    restart_policy: unless-stopped
+    command: --conf /etc/coredns/Corefile
+    read_only: true
     volumes:
-      - "{{ coredns_data_dir }}:/data"
+      - "{{ coredns_data_dir }}:/etc/coredns"
     recreate: true
+    default_host_ip: ""
+    comparisons:
+      networks: strict
+    ports:
+      - "53:53/udp"
+    networks_cli_compatible: true
     networks:
       - name: "{{ docker_network_private }}"
-        ipv4_address: "{{ coredns_ip }}"
-    log_driver: "fluentd"
-    log_options:
-      fluentd-address: "{{ fluentd_ip }}:24224"
-      tag: "svc_coredns"
+    labels:
+      traefik.enable: "false"
   become: true
