@@ -47,22 +47,18 @@
     entrypoint:
       - /usr/local/bin/traefik
     command: --configFile=/etc/traefik/traefik.yml
-    exposed_ports:
-      - 80
-      - 443
-      - 8080
     ports:
-      - "80"
-      - "443"
-      - "8080"
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
     networks:
-      - name: "{{ docker_network_public }}"
-        ipv4_address: "{{ traefik_ip }}"
+      - name: "{{ docker_network_private }}"
     volumes:
       - "{{ traefik_data_dir }}/traefik.yml:/etc/traefik/traefik.yml"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.svc_traefik.rule: "Host(`traefik.host`)"
+      traefik.http.services.svc_traefik.loadbalancer.server.port: "8080"
     recreate: true
-    log_driver: "fluentd"
-    log_options:
-      fluentd-address: "{{ fluentd_ip }}:24224"
-      tag: "svc_traefik"
   become: true

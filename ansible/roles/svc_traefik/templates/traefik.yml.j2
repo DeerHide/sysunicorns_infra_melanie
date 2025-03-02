@@ -1,11 +1,14 @@
 ## traefik.yml
 
 entryPoints:
-  http:
+  web:
     address: :80
+  websecure:
+    address: :443
 
 # Docker configuration backend
 providers:
+  docker: {}
 
 # API and dashboard configuration
 api:
