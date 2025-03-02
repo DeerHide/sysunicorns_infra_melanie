@@ -1,0 +1,10 @@
+---
+# code: language=ansible
+
+- name: Include Nut UPS Daemon Docker container
+  ansible.builtin.include_tasks:
+    file: setup_upsd.yml
+
+- name: Include Nut Web Monitor Docker container
+  ansible.builtin.include_tasks:
+    file: setup_nut_web_monitor.yml

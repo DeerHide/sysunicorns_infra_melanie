@@ -1,0 +1,31 @@
+---
+# code: language=ansible
+
+- name: Pull Nut Web Monitor Docker image
+  community.docker.docker_image_pull:
+    name: "ghcr.io/superioone/nut_webgui"
+    tag: "latest"
+    pull: always
+    timeout: 10
+    tls: true
+    tls_hostname: "{{ docker_ghcr_registry_hostname }}"
+
+- name: Create Nut Web Monitor Docker container
+  community.docker.docker_container:
+    name: svc_nut_web_monitor
+    image: "ghcr.io/superioone/nut_webgui:latest"
+    state: started
+    restart_policy: always
+    exposed_ports:
+      - "9000"
+    networks:
+      - name: "{{ docker_network_private }}"
+    env:
+      UPSD_ADDR: "192.168.60.188"
+      UPSD_USER: "observer"
+      UPSD_PASS: "password_here"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.svc_nut_web_monitor.rule: "Host(`nut.host`)"
+      traefik.http.services.svc_nut_web_monitor.loadbalancer.server.port: "9000"
+    recreate: true
