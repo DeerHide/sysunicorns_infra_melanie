@@ -1,0 +1,53 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_otel_lgtm/tasks/setup_otel_lgtm.yml
+# This file contains the tasks to setup the Docker container for otel_lgtm
+- name: Pull otel-lgtm image
+  community.docker.docker_image_pull:
+    name: "{{ otel_lgtm_docker_image_name }}"
+    tag: "{{ otel_lgtm_docker_image_version }}"
+    pull: always
+    timeout: 10
+    tls: true
+    tls_hostname: "{{ docker_registry_hostname }}"
+  become: true
+
+- name: Create directory for otel_lgtm
+  ansible.builtin.file:
+    name: "{{ otel_lgtm_data_dir }}"
+    state: directory
+    mode: "700"
+    recurse: true
+  become: true
+
+- name: Create docker_volume for otel_lgtm data
+  community.docker.docker_volume:
+    name: "{{ otel_lgtm_docker_volume_name }}"
+    driver: local
+    driver_options:
+      type: "none"
+      o: "bind"
+      device: "{{ otel_lgtm_data_dir }}"
+    state: present
+  become: true
+
+- name: Create a otel_lgtm container
+  community.docker.docker_container:
+    name: svc_otel_lgtm
+    image: "{{ otel_lgtm_docker_image_name }}:{{ otel_lgtm_docker_image_version }}"
+    state: started
+    restart_policy: always
+    ports:
+      - 3000:3000
+      - 4317:4317
+      - 4318:4318
+    recreate: true
+  become: true
+
+- name: Wait for the otel_lgtm to be ready
+  ansible.builtin.wait_for:
+    host: "{{ otel_lgtm_ip }}"
+    port: 3000
+    state: started
+    delay: 5
+    timeout: 240

@@ -17,6 +17,7 @@
     - role: svc_coredns
     - role: svc_prometheus
     - role: svc_node_exporter
+    - role: svc_otel_lgtm
     - role: cli_vault
     - role: svc_vault
     - role: cli_minio

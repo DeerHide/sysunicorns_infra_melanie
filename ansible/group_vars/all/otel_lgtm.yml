@@ -1,0 +1,10 @@
+---
+# code: language=ansible
+# Path: ansible/group_vars/all/otel_lgtm.yml
+# This file contains the variables for the otel_lgtm service
+otel_lgtm_data_dir_name: svc_otel_lgtm_data
+otel_lgtm_data_dir: "{{ docker_volumes_dir }}/{{ otel_lgtm_data_dir_name }}"
+otel_lgtm_docker_image_name: grafana/otel-lgtm
+otel_lgtm_docker_image_version: latest
+otel_lgtm_docker_volume_name: svc_otel_lgtm_data_volume
+otel_lgtm_ip: 172.16.20.20

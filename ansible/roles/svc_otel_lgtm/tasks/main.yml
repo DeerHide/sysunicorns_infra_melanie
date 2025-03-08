@@ -1,0 +1,7 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_otel_lgtm/tasks/main.yml
+#
+
+- name: Include tasks from setup_otel_lgtm.yml
+  ansible.builtin.include_tasks: setup_otel_lgtm.yml
