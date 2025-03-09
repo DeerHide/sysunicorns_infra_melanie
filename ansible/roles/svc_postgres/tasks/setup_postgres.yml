@@ -53,6 +53,7 @@
       traefik.http.services.svc_postgres.loadbalancer.server.port: "5432"
     recreate: true
   become: true
+
 # - name: Wait for the postgres to be ready
 #   ansible.builtin.wait_for:
 #     host: "{{ postgres_ip }}"
