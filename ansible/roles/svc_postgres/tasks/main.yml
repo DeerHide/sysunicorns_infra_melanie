@@ -1,0 +1,4 @@
+---
+# code: language=ansible
+- name: Include setup_postgres.yml
+  ansible.builtin.include_tasks: setup_postgres.yml

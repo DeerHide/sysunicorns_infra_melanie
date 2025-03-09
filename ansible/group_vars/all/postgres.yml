@@ -1,0 +1,9 @@
+---
+# code: language=ansible
+# Path: ansible/group_vars/all/postgres.yml
+# This file contains the variables for the postgres service
+postgres_data_dir_name: svc_postgres_data
+postgres_data_dir: "{{ docker_volumes_dir }}/{{ postgres_data_dir_name }}"
+postgres_docker_image_name: postgres
+postgres_docker_image_version: latest
+postgres_docker_volume_name: svc_postgres_data_volume
