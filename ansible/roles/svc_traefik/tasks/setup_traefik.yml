@@ -47,22 +47,35 @@
     entrypoint:
       - /usr/local/bin/traefik
     command: --configFile=/etc/traefik/traefik.yml
-    exposed_ports:
-      - 80
-      - 443
-      - 8080
     ports:
-      - "80"
-      - "443"
-      - "8080"
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
     networks:
-      - name: "{{ docker_network_public }}"
-        ipv4_address: "{{ traefik_ip }}"
+      - name: "{{ docker_network_private }}"
     volumes:
       - "{{ traefik_data_dir }}/traefik.yml:/etc/traefik/traefik.yml"
-    recreate: true
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.svc_traefik.rule: "Host(`traefik.host`)"
+      traefik.http.services.svc_traefik.loadbalancer.server.port: "8080"
     log_driver: "fluentd"
     log_options:
       fluentd-address: "{{ fluentd_ip }}:24224"
       tag: "svc_traefik"
+    recreate: true
   become: true
+
+- name: Get Traefik container IP address
+  ansible.builtin.shell:
+    cmd: docker inspect svc_traefik | jq -r '.[0].NetworkSettings.Networks[].IPAddress'
+  register: traefik_container_ip
+
+- name: Wait for the traefik to be ready
+  ansible.builtin.wait_for:
+    host: "{{ traefik_container_ip.stdout }}"
+    port: 8080
+    state: started
+    delay: 5
+    timeout: 240
