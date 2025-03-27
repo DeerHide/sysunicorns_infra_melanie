@@ -5,19 +5,36 @@
     - melanie-dev
   vars:
     ansible_python_interpreter: auto
-    host_recipient: EB2EB13FC7BB5D5624F2F96DE1B4F0E6FD82F9CA
+    gateway_address: 192.168.1.254
   roles:
     # This role manage vagrant specificity
     - role: vagrant
+      tags: vagrant_user
     - role: updates
+      tags: deerhide_operator_user
     - role: deerhide_users
+      tags: deerhide_operator_user
     - role: svc_docker
+      tags: deerhide_operator_user
     - role: svc_fluentd
+      tags: deerhide_operator_user
     - role: svc_traefik
+      tags: deerhide_operator_user
     - role: svc_coredns
+      tags: deerhide_operator_user
     - role: svc_prometheus
+      tags: deerhide_operator_user
     - role: svc_node_exporter
+      tags: deerhide_operator_user
+    - role: svc_postgres
+      tags: deerhide_operator_user
+    - role: svc_semaphore
+      tags: deerhide_operator_user
     - role: cli_vault
+      tags: deerhide_operator_user
     - role: svc_vault
+      tags: deerhide_operator_user
     - role: cli_minio
+      tags: deerhide_operator_user
     - role: svc_minio
+      tags: deerhide_operator_user
