@@ -5,7 +5,8 @@
 - name: Set password for deerhide-operator
   ansible.builtin.user:
     name: deerhide-operator
-    password: "{{ deerhide_operator_password }}"
+    password: "$6$z5XsRFQye5AQe4W9$GPQwL8H.x8cykD1DBh1Sf2o8zYNhb.lansdl1EK0Rl/3Ot4uz1Sr7p3/KIZtRn1DWGYEeAFXvTK0I9d5I3pGw0"
+    shell: /bin/bash
     update_password: always
   become: true
 
@@ -15,4 +16,25 @@
     src: template/deerhide-operator.j2
     dest: /etc/sudoers.d/deerhide-operator
     mode: "0440"
+  become: true
+
+- name: Change hostname for host
+  ansible.builtin.hostname:
+    name: melanie-dev
+  become: true
+
+- name: Apply fix to DNS file
+  block:
+    - name: Remove existing /etc/resolv.conf
+      ansible.builtin.file:
+        path: /etc/resolv.conf
+        state: absent
+
+    - name: Create new /etc/resolv.conf with custom values
+      ansible.builtin.copy:
+        dest: /etc/resolv.conf
+        content: |
+          nameserver 127.0.0.1
+          nameserver 172.16.20.1
+          nameserver {{ gateway_address }}
   become: true
