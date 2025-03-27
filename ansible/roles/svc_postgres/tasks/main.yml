@@ -1,4 +1,10 @@
 ---
 # code: language=ansible
-- name: Include setup_postgres.yml
-  ansible.builtin.include_tasks: setup_postgres.yml
+
+# Install the requirements for the svc_postgres role
+- name: Include tasks from requirements.yml
+  ansible.builtin.include_tasks: requirements.yml
+
+# Setup tasks for postgres/semaphore docker container
+- name: Include setup_postgres_semaphore.yml
+  ansible.builtin.include_tasks: setup_postgres_semaphore.yml
