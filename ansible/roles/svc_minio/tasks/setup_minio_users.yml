@@ -32,7 +32,6 @@
 - name: Create minio users
   ansible.builtin.command:
     cmd: mc admin user add melanie {{ item.name }} {{ item.password }}
-  become: true
   changed_when: false
   when: item.present is false
   loop: "{{ svc_minio_users }}"
@@ -44,6 +43,7 @@
       set -eo pipefail
       echo {{ item.password }} | gpg --trust-model always -e --armor -r {{ item.gpg_userid }}
   changed_when: false
+  failed_when: minio_users_list.rc != 0
   when: item.present is false
   with_items: "{{ svc_minio_users }}"
   register: gpg_encrypt_results
@@ -52,7 +52,7 @@
   community.general.slack:
     token: "{{ slack_token }}"
     channel: "@{{ item.item.userid }}"
-    username: Melanie_Minio_Ansible
+    username: Ansible Minio - {{ ansible_hostname }}
     blocks:
       - type: section
         text:
@@ -65,11 +65,13 @@
   when: item.item.present is false
   with_items: "{{ gpg_encrypt_results.results }}"
 
-- name: Remove credential file
-  ansible.builtin.shell:
-    executable: /bin/bash
-    cmd: rm /tmp/minio_ID_*
-  register: remove_tmp_minio_file
-  changed_when: false
-  failed_when: remove_tmp_minio_file == ""
-  become: true
+# To be fixed or removed
+#
+# - name: Remove credential file
+#   ansible.builtin.shell:
+#     executable: /bin/bash
+#     cmd: rm /tmp/minio_ID_*
+#   register: remove_tmp_minio_file
+#   changed_when: false
+#   failed_when: remove_tmp_minio_file == ""
+#   become: true
