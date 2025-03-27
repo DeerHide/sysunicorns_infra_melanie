@@ -3,7 +3,7 @@
 set -euo pipefail
 
 function on_dev() {
-  ssh deerhide-operator@192.168.1.35 -C "$@"
+  ssh deerhide-operator@192.168.1.100 -C "$@"
 }
 
 on_dev docker stop svc_vault
