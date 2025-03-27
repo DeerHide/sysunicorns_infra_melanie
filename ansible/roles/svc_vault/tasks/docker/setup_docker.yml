@@ -32,8 +32,6 @@
     command: "vault server -config /vault/config/config.json"
     exposed_ports:
       - "8200"
-    ports:
-      - "8200"
     recreate: true
     networks:
       - name: "{{ docker_network_private }}"
