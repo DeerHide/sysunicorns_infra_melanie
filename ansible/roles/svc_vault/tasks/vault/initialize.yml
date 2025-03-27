@@ -29,7 +29,7 @@
   community.general.slack:
     token: "{{ slack_token }}"
     channel: "{{ slack_channel }}"
-    username: "Ansible - role: svc_vault"
+    username: "Ansible - role: svc_vault - {{ ansible_hostname }}"
     icon_url: "https://grafana.com/media/solutions/vault-monitor/vault-logo.png"
     blocks:
       - type: header
@@ -93,6 +93,17 @@
     group: "deerhide-operator"
   become: true
 
+- name: Set host_recipient for host
+  ansible.builtin.shell:
+    cmd: "gpg --list-keys --with-colons {{ ansible_hostname }} | awk -F: '/^fpr:/ {print $10; exit}'"
+  register: host_recipient
+  changed_when: false
+
+- name: Set host_recipient fact
+  ansible.builtin.set_fact:
+    host_recipient: "{{ host_recipient.stdout }}"
+  changed_when: false
+
 - name: Encrypt and Store the Root Token
   ansible.builtin.shell: # noqa: command-instead-of-shell
     executable: /bin/bash
@@ -143,7 +154,7 @@
   community.general.slack:
     token: "{{ slack_token }}"
     channel: "{{ slack_channel }}"
-    username: "Ansible - role: svc_vault"
+    username: "Ansible - role: svc_vault - {{ ansible_hostname }}"
     icon_url: "https://grafana.com/media/solutions/vault-monitor/vault-logo.png"
     blocks:
       - type: header
