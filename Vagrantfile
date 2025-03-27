@@ -14,7 +14,9 @@ Vagrant.configure("2") do |config|
     # For the box, the username and password are "vagrant"
     config.ssh.username = "vagrant"
 
-    config.vm.network "public_network", type: "dhcp", adapter: 2
+    # We use fixed IP address for the VM and set bridge adapter to the host's network adapter
+    ## You need to change the IP address and the bridge adapter to match your network configuration
+    config.vm.network "public_network", ip: "192.168.1.100", bridge: "Intel(R) Ethernet Controller (3) I225-V", adapter: 2
 
     # Vagrant VM customization documentation: https://developer.hashicorp.com/vagrant/docs/providers/virtualbox/configuration
     config.vm.provider "virtualbox" do |vb|
@@ -28,6 +30,7 @@ Vagrant.configure("2") do |config|
         vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
         vb.customize ["modifyvm", :id, "--accelerate-3d", "on"]
         vb.customize ["modifyvm", :id, "--chipset", "ich9"]
+        vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
     end
 
     config.vm.define "melanie-dev" do |node|
@@ -38,8 +41,24 @@ Vagrant.configure("2") do |config|
         sudo apt-get install -y python3-pip
     SHELL
 
+    # Run tasks with the vagrant user
+    # Set vagrant as the default user for the tasks with the "vagrant_user" tag
     config.vm.provision "ansible" do |ansible|
         ansible.playbook = "ansible/vagrant-playbook.yml"
         ansible.compatibility_mode = "2.0"
+        ansible.tags = "vagrant_user"
+    end
+
+    # Run tasks with the deerhide-operator user
+    # Set deerhide-operator as the default user for the tasks with the "deerhide_operator_user" tag
+    config.vm.provision "ansible" do |ansible|
+        ansible.playbook = "ansible/vagrant-playbook.yml"
+        ansible.compatibility_mode = "2.0"
+        ansible.tags = "deerhide_operator_user"
+        ansible.extra_vars = {
+            ansible_user: "deerhide-operator",
+            ansible_become: true,
+            ansible_become_user: "deerhide-operator"
+        }
     end
 end
