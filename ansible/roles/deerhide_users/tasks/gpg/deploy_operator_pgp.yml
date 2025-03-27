@@ -51,5 +51,10 @@
   become: true
   become_user: deerhide-operator
   register: git_operator_gpg
+  changed_when: true
+  retries: 2
   notify:
     - Import the operator's PGP key
+
+- name: Force handlers to run
+  ansible.builtin.meta: flush_handlers
