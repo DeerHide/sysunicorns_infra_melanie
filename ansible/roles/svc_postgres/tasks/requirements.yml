@@ -1,0 +1,13 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_postgres/tasks/requirements.yml
+# Install the requirements for the svc_postgres role
+
+# It's required on the target machine to be able to use the json_query module
+# https://blog.networktocode.com/post/ansible-filtering-json-query/
+- name: Install "jq"
+  ansible.builtin.apt:
+    name: jq
+    state: latest # noqa: package-latest
+    update_cache: true
+  become: true
