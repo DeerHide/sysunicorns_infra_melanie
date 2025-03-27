@@ -2,6 +2,7 @@
 # code: language=ansible
 # Path: ansible/roles/svc_minio/tasks/setup_minio.yml
 # This file contains the tasks to setup the Docker container for Minio
+
 - name: Pull minio image
   community.docker.docker_image_pull:
     name: "{{ minio_docker_image_name }}"
@@ -41,27 +42,43 @@
     exposed_ports:
       - 9000
       - 9001
-    ports:
-      - "9000"
-      - "9001"
     networks:
       - name: "{{ docker_network_private }}"
-        ipv4_address: "{{ minio_ip }}"
     env:
-      MINIO_ROOT_USER: "{{ melanie_minio_root_user }}"
-      MINIO_ROOT_PASSWORD: "{{ melanie_minio_root_password }}"
+      MINIO_BROWSER_REDIRECT_URL: "http://console-minio.host"
+      MINIO_DOMAIN: "minio.host"
+      MINIO_ROOT_USER: "{{ svc_minio_root_user }}"
+      MINIO_ROOT_PASSWORD: "{{ svc_minio_root_password }}"
     volumes:
       - "{{ minio_data_dir }}:/data"
     recreate: true
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.svc_minio.rule: "Host(`minio.host`)"
+      traefik.http.routers.svc_minio.service: "svc_minio_service"
+      traefik.http.services.svc_minio_service.loadbalancer.server.port: "9000"
+      traefik.http.routers.svc_minio_console.rule: "Host(`console-minio.host`)"
+      traefik.http.routers.svc_minio_console.service: "svc_minio_console_service"
+      traefik.http.services.svc_minio_console_service.loadbalancer.server.port: "9001"
+    # healthcheck: # To be Fixed
+    #   test: ["CMD-SHELL", "curl -f http://minio.host/minio/health/live"]
+    #   interval: 30s
+    #   timeout: 20s
+    #   retries: 3
     log_driver: "fluentd"
     log_options:
       fluentd-address: "{{ fluentd_ip }}:24224"
       tag: "svc_minio"
   become: true
 
+- name: Get Minio container IP address
+  ansible.builtin.shell:
+    cmd: docker inspect svc_minio | jq -r '.[0].NetworkSettings.Networks[].IPAddress'
+  register: minio_container_ip
+
 - name: Wait for the minio to be ready
   ansible.builtin.wait_for:
-    host: "{{ minio_ip }}"
+    host: "{{ minio_container_ip.stdout }}"
     port: 9000
     state: started
     delay: 5
