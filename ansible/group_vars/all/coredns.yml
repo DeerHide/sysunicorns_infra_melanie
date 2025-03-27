@@ -7,4 +7,6 @@ coredns_data_dir: "{{ docker_volumes_dir }}/{{ coredns_data_dir_name }}"
 coredns_docker_image_name: coredns/coredns
 coredns_docker_image_version: latest
 coredns_docker_volume_name: svc_coredns_data_volume
-coredns_ip: 172.16.20.53
+coredns_ip_hosts_address: "{{ '192.168.60.188' if ansible_hostname == 'melanie' else '192.168.1.100' }}"
+coredns_ip_velmios_address: "{{ '192.168.70.1' if ansible_hostname == 'melanie' else '192.168.1.100' }}"
+coredns_forward_address: "{{ '192.168.60.1' if ansible_hostname == 'melanie' else '192.168.1.254' }}"

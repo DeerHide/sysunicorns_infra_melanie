@@ -1,0 +1,20 @@
+---
+# code: language=ansible
+# Path: ansible/group_vars/all/semaphore.yml
+# This file contains the variables for the semaphore service
+
+# Semaphore Data
+semaphore_data_dir_name: svc_semaphore_data
+semaphore_data_dir: "{{ docker_volumes_dir }}/{{ semaphore_data_dir_name }}"
+# Semaphore Config
+semaphore_config_dir_name: svc_semaphore_config
+semaphore_config_dir: "{{ semaphore_data_dir }}/{{ semaphore_config_dir_name }}"
+# Semaphore Tmp
+semaphore_tmp_dir_name: svc_semaphore_tmp
+semaphore_tmp_dir: "{{ semaphore_data_dir }}/{{ semaphore_tmp_dir_name }}"
+# Semaphore Docker image & volume
+semaphore_docker_image_name: semaphoreui/semaphore
+semaphore_docker_image_version: latest
+semaphore_docker_volume_name: svc_semaphore_data_volume
+# Semaphore Vars for the container
+semaphore_root_user: "{{ semaphore_tmp_dir }}/semaphore_root_user_add"
