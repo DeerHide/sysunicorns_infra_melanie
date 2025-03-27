@@ -1,5 +1,39 @@
-.:53 {
-    forward . 192.168.2.1
+deerhide.run {
+    hosts {
+        {{ coredns_ip_hosts_address }}  nut.melanie.deerhide.run
+        {{ coredns_ip_hosts_address }}  traefik.melanie.deerhide.run
+        {{ coredns_ip_hosts_address }}  static.melanie.deerhide.run
+        fallthrough
+    }
+    forward . {{ coredns_forward_address }}
+}
+
+velmios.dev {
+    hosts {
+        {{ coredns_ip_velmios_address }} argo.stg.velmios.dev
+        {{ coredns_ip_velmios_address }} harbor.stg.velmios.dev
+        {{ coredns_ip_velmios_address }} auth.stg.velmios.dev
+        fallthrough
+    }
+    forward . {{ coredns_forward_address }}
+}
+
+host {
+    hosts {
+        {{ coredns_ip_hosts_address }}  static.host
+        {{ coredns_ip_hosts_address }}  sysunicorns.kube.host
+        {{ coredns_ip_hosts_address }}  traefik.host
+        {{ coredns_ip_hosts_address }}  nut.host
+        {{ coredns_ip_hosts_address }}  minio.host
+        {{ coredns_ip_hosts_address }}  console-minio.host
+        {{ coredns_ip_hosts_address }}  semaphore.host
+        fallthrough
+    }
+    forward . {{ coredns_forward_address }}
+}
+
+. {
+    forward . {{ coredns_forward_address }}
     log
     errors
     cache
