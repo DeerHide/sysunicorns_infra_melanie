@@ -1,0 +1,133 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_semaphore/tasks/setup_semaphore.yml
+# This file contains the tasks to setup the Docker container for SemaphoreUI
+
+- name: Pull semaphore image
+  community.docker.docker_image_pull:
+    name: "{{ semaphore_docker_image_name }}"
+    tag: "{{ semaphore_docker_image_version }}"
+    pull: always
+    timeout: 10
+    tls: true
+    tls_hostname: "{{ docker_registry_hostname }}"
+  become: true
+
+- name: Create directory for semaphore
+  ansible.builtin.file:
+    name: "{{ semaphore_data_dir }}"
+    state: directory
+    mode: "700"
+    recurse: true
+  become: true
+
+- name: Create docker_volume for semaphore data
+  community.docker.docker_volume:
+    name: "{{ semaphore_docker_volume_name }}"
+    driver: local
+    driver_options:
+      type: "none"
+      o: "bind"
+      device: "{{ semaphore_data_dir }}"
+    state: present
+  become: true
+
+- name: Deploy Semaphore configuration file
+  ansible.builtin.template:
+    src: templates/config.json.j2
+    dest: "{{ semaphore_data_dir }}/config.json"
+    mode: "644"
+    owner: "root"
+    group: "root"
+  become: true
+
+- name: Create a semaphore container
+  community.docker.docker_container:
+    name: svc_semaphore
+    image: "{{ semaphore_docker_image_name }}:{{ semaphore_docker_image_version }}"
+    state: started
+    restart_policy: always
+    recreate: true
+    command: "/usr/local/bin/semaphore server --config /usr/local/bin/config.json"
+    exposed_ports:
+      - "3000"
+    networks:
+      - name: "{{ docker_network_private }}"
+    env:
+      SEMAPHORE_DB_DIALECT: postgres
+      SEMAPHORE_DB_HOST: svc_postgres_semaphore
+      SEMAPHORE_DB_NAME: semaphore
+      SEMAPHORE_DB_USER: "{{ svc_semaphore_db_root_user }}"
+      SEMAPHORE_DB_PASS: "{{ svc_semaphore_db_root_password }}"
+      SEMAPHORE_ADMIN: "{{ svc_semaphore_root_user }}"
+      SEMAPHORE_ADMIN_PASSWORD: "{{ svc_semaphore_root_password }}"
+      SEMAPHORE_ADMIN_NAME: "{{ svc_semaphore_root_user }}"
+      SEMAPHORE_ADMIN_EMAIL: groot@localhost # TBD
+      ANSIBLE_HOST_KEY_CHECKING: "False"
+    volumes:
+      - "{{ semaphore_data_dir }}:/var/lib/semaphore"
+      - "{{ semaphore_tmp_dir }}:/tmp/semaphore"
+      - "{{ semaphore_config_dir }}:/etc/semaphore"
+      - "{{ semaphore_data_dir }}/config.json:/usr/local/bin/config.json"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.svc_semaphore.rule: "Host(`semaphore.host`)"
+      traefik.http.services.svc_semaphore.loadbalancer.server.port: "3000"
+    # healthcheck: # FIXME : semaphore.host is block when we use the healthcheck
+    #   test: ["CMD", "curl", "-f", "http://semaphore.host/api/ping"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 5s
+  become: true
+
+- name: Get semaphore container IP address
+  ansible.builtin.shell:
+    cmd: docker inspect svc_semaphore | jq -r '.[0].NetworkSettings.Networks[].IPAddress'
+  register: semaphore_container_ip
+
+- name: Debug semaphore container IP address
+  ansible.builtin.debug:
+    msg: "semaphore container IP address is {{ semaphore_container_ip.stdout }}"
+
+- name: Wait for the semaphore to be ready
+  ansible.builtin.wait_for:
+    host: "{{ semaphore_container_ip.stdout }}"
+    port: 3000
+    state: started
+    delay: 5
+    timeout: 240
+
+- name: Check user list and Add root user to semaphore
+  block:
+    - name: Check user list
+      community.docker.docker_container_exec:
+        container: svc_semaphore
+        argv:
+          - /bin/bash
+          - "-c"
+          - "semaphore user list"
+          - "--config /usr/local/bin/config.json"
+        chdir: /usr/local/bin
+      register: check_user_list
+      changed_when: false
+      failed_when: check_user_list.rc != 0
+
+    - name: Add root user to semaphore
+      community.docker.docker_container_exec:
+        container: svc_semaphore
+        argv:
+          - /bin/bash
+          - "-c"
+          - |
+            semaphore user add \
+            --name "{{ svc_semaphore_root_user }}" \
+            --email groot@localhost \
+            --login "{{ svc_semaphore_root_user }}" \
+            --password "{{ svc_semaphore_root_password }}" \
+            --admin \
+            --config /usr/local/bin/config.json
+        chdir: /usr/local/bin
+      changed_when: true
+      when: "'groot' not in check_user_list.stdout"
+      become: true
