@@ -1,0 +1,75 @@
+---
+# code: language=ansible
+# Path: ansible/roles/svc_postgres/tasks/setup_postgres_semaphore.yml
+# This file contains the tasks to setup the Docker container for PostgreSQL
+
+- name: Pull postgres image
+  community.docker.docker_image_pull:
+    name: "{{ postgres_docker_image_name }}"
+    tag: "{{ postgres_docker_image_version }}"
+    pull: always
+    timeout: 10
+    tls: true
+    tls_hostname: "{{ docker_registry_hostname }}"
+  become: true
+
+- name: Create directory for postgres
+  ansible.builtin.file:
+    name: "{{ postgres_semaphore_data_dir }}"
+    state: directory
+    mode: "700"
+    recurse: true
+  become: true
+
+- name: Create docker_volume for postgres semaphore data
+  community.docker.docker_volume:
+    name: "{{ postgres_docker_volume_name }}"
+    driver: local
+    driver_options:
+      type: "none"
+      o: "bind"
+      device: "{{ postgres_semaphore_data_dir }}"
+    state: present
+  become: true
+
+- name: Create a postgres container
+  community.docker.docker_container:
+    name: svc_postgres_semaphore
+    image: "{{ postgres_docker_image_name }}:{{ postgres_docker_image_version }}"
+    state: started
+    restart_policy: always
+    recreate: true
+    exposed_ports:
+      - 5432
+    networks:
+      - name: "{{ docker_network_private }}"
+    env:
+      POSTGRES_DB: semaphore
+      POSTGRES_USER: "{{ svc_semaphore_db_root_user }}"
+      POSTGRES_PASSWORD: "{{ svc_semaphore_db_root_password }}"
+    volumes:
+      - "{{ postgres_semaphore_data_dir }}:/var/lib/postgresql/data"
+    log_driver: "fluentd"
+    log_options:
+      fluentd-address: "{{ fluentd_ip }}:24224"
+      tag: "svc_postgres_semaphore"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U groot -d semaphore"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+  become: true
+
+- name: Get postgres container IP address
+  ansible.builtin.shell:
+    cmd: docker inspect svc_postgres_semaphore | jq -r '.[0].NetworkSettings.Networks[].IPAddress'
+  register: postgres_semaphore_container_ip
+
+- name: Wait for the postgres to be ready
+  ansible.builtin.wait_for:
+    host: "{{ postgres_semaphore_container_ip.stdout }}"
+    port: 5432
+    state: started
+    delay: 5
+    timeout: 240
