@@ -1,0 +1,42 @@
+---
+# code: language=ansible
+
+- name: "Pull etcd docker image"
+  community.docker.docker_image_pull:
+    name: "quay.io/coreos/etcd"
+    tag: "v2.3.8"
+    pull: always
+    timeout: 10
+    tls: true
+    tls_hostname: "{{ docker_quay_registry_hostname }}"
+  become: true
+
+- name: "Create directory for etcd"
+  ansible.builtin.file:
+    name: "{{ etcd_data_dir }}"
+    state: directory
+    mode: "777" # FIXME: find solution for UID/GID mismatch between host and container
+    recurse: true
+    owner: "deerhide-operator"
+    group: "docker"
+  become: true
+
+- name: "Create docker etc container"
+  community.docker.docker_container:
+    name: "svc_etcd"
+    image: "quay.io/coreos/etcd:v2.3.8"
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "2379:2379"
+    command: >
+      /usr/local/bin/etcd
+      --name etcd
+      --data-dir /etcd-data
+      --initial-advertise-peer-urls http://svc_etcd:2300
+      --listen-peer-urls http://0.0.0.0:2300
+      --advertise-client-urls http://192.168.60.188:2379
+      --listen-client-urls http://192.168.60.188:2379
+      --initial-cluster svc_etcd=http://svc_etcd:2300
+    volumes:
+      - "{{ etcd_data_dir }}:/etcd-data"

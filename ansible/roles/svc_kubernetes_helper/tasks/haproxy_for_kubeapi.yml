@@ -40,6 +40,9 @@
     privileged: false
     ports:
       - "6443:6443"
+      - "5443:5443"
+      - "4443:4443"
+      - "7443:7443"
     volumes:
       - "{{ svc_sidero_haproxy_config_serve_docker_volume_name }}:/usr/local/etc/haproxy"
     networks:

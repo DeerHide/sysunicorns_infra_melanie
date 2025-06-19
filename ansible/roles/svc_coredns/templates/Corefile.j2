@@ -5,6 +5,43 @@ deerhide.run {
         192.168.60.188  static.melanie.deerhide.run
         fallthrough
     }
+    forward . 192.168.60.1
+}
+
+velmios.io {
+    hosts {
+        192.168.80.1 velmios.minio.mgt.prd.velmios.io
+        192.168.80.1 console.minio.mgt.prd.velmios.io
+        192.168.80.1 auth.mgt.prd.velmios.io
+        192.168.80.1 prometheus.mgt.prd.velmios.io
+        192.168.80.1 gateway.tempo.mgt.prd.velmios.io
+        192.168.80.1 query.tempo.mgt.prd.velmios.io
+        192.168.80.2 loki.mgt.prd.velmios.io
+        192.168.80.1 harbor.mgt.prd.velmios.io
+        192.168.81.1 admin.kratos.customers.blue.prd.velmios.io
+    }
+    forward . 192.168.60.1
+}
+
+velmios.dev {
+    hosts {
+        192.168.70.1 argo-stg.velmios.dev
+        192.168.70.1 headlamp-stg.velmios.dev
+        192.168.70.1 harbor.stg.velmios.dev
+        192.168.70.1 auth.stg.velmios.dev
+        192.168.70.1 hydra.stg.velmios.dev
+        192.168.70.1 mailpit-stg.velmios.dev
+        192.168.70.1 console-velmios-minio-stg.velmios.dev
+        192.168.70.1 velmios-minio-stg.velmios.dev
+        192.168.70.1 kratos-customer-stg.velmios.dev
+        192.168.70.1 portal-stg.velmios.dev
+        192.168.70.1 customer-stg.velmios.dev
+        192.168.70.1 alloy-stg.velmios.dev
+        192.168.70.1 payment-stg.velmios.dev
+        192.168.70.1 booking-stg.velmios.dev
+        fallthrough
+    }
+    forward . 192.168.60.1
 }
 
 host {
@@ -15,10 +52,12 @@ host {
         192.168.60.188  nut.host
         fallthrough
     }
+    forward . 192.168.60.1
 }
 
 . {
     forward . 192.168.60.1
+    log
     errors
     cache
 }
