@@ -6,36 +6,48 @@
   vars:
     host_recipient: 188023BD2932E6061587670937F3F1D00BE38070
   roles:
-    - role: updates
-    - role: deerhide_users
-    - role: cli_kubectl
-    - role: cli_sidero
-    - role: svc_docker
-    - role: svc_fluentd
-    - role: svc_traefik
-    - role: svc_coredns
-    - role: svc_prometheus
-    - role: svc_node_exporter
-    - role: cli_vault
-    - role: svc_vault
-    - role: svc_dex
-    - role: cli_minio
-    - role: svc_minio
-    # RAPAS Factorio Server (use the default values)
-    - role: svc_factorio
-    # PayPlug Factorio Server (use override values)
-    - role: svc_factorio
+    # - role: updates
+    # - role: deerhide_users
+    - role: geerlingguy.nut_client
       vars:
-        svc_factorio_data_dir_name: svc_factorio_payplug_data
-        svc_factorio_data_dir: "{{ docker_volumes_dir }}/svc_factorio_payplug_data/factorio"
-        svc_factorio_docker_image_name: factoriotools/factorio
-        svc_factorio_docker_image_version: "stable"
-        svc_factorio_docker_volume_name: svc_factorio_payplug_data_volume
-        svc_factorio_ip: 172.16.100.101
-        svc_factorio_gameserver_password: "{{ svc_factorio_payplug_password }}"
-        svc_factorio_gameserver_name: "{{ svc_factorio_payplug_name }}"
-        svc_factorio_docker_container_name: "svc_factorio_payplug"
-        svc_factorio_docker_port: "35197"
+        nut_client_ups: nut-server
+        nut_client_server: 192.168.60.188
+        nut_client_username: observer
+        nut_client_password: password_here
+      become: true
+    # - role: cli_kubectl
+    # - role: cli_talos
+    # - role: cli_certbot
+    # - role: svc_docker
+    - role: svc_coredns
+    - role: svc_traefik
+    - role: svc_nut
+    - role: svc_kubernetes_helper
+    # - role: svc_fluentd
+
+    # - role: svc_prometheus
+    # - role: svc_node_exporter
+    # - role: cli_vault
+    # - role: svc_vault
+    # - role: svc_dex
+    # - role: cli_minio
+    # - role: svc_minio
+    # RAPAS Factorio Server (use the default values)
+    # - role: svc_factorio
+    # PayPlug Factorio Server (use override values)
+    # - role: svc_factorio
+    #   vars:
+    #     svc_factorio_data_dir_name: svc_factorio_payplug_data
+    #     svc_factorio_data_dir: "{{ docker_volumes_dir }}/svc_factorio_payplug_data/factorio"
+    #     svc_factorio_docker_image_name: factoriotools/factorio
+    #     svc_factorio_docker_image_version: "stable"
+    #     svc_factorio_docker_volume_name: svc_factorio_payplug_data_volume
+    #     svc_factorio_ip: 172.16.100.101
+    #     svc_factorio_gameserver_password: "{{ svc_factorio_payplug_password }}"
+    #     svc_factorio_gameserver_name: "{{ svc_factorio_payplug_name }}"
+    #     svc_factorio_docker_container_name: "svc_factorio_payplug"
+    #     svc_factorio_docker_port: "35197"
+    # - role: cli_kubectl
 # - name: Rasp's playbook
 #   hosts:
 #     - rasp
