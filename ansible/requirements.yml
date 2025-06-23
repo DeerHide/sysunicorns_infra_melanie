@@ -1,3 +1,6 @@
 collections:
   - name: community.docker
     version: 3.10.4
+roles:
+  - name: geerlingguy.nut_client
+    version: 1.1.0

@@ -9,3 +9,5 @@ python3 -m venv .venv
 pip install ansible
 pip install ansible-dev-tools
 pip install jmespath
+
+ansible-galaxy install -r ansible/requirements.yml
