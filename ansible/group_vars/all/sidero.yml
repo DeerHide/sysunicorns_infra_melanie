@@ -4,3 +4,15 @@
 # This file contains the variables for sidero
 
 svc_sidero_ip: 172.16.20.60
+#
+svc_sidero_cilium_config_serve_ip: 172.16.20.61
+svc_sidero_cilium_config_serve_dir: "{{ docker_volumes_dir }}/svc_sidero_cilium_config_serve"
+svc_sidero_cilium_config_serve_docker_volume_name: svc_sidero_cilium_config_serve_volume
+svc_sidero_cilium_config_serve_docker_container_name: svc_sidero_cilium_config_serve
+svc_sidero_cilium_config_serve_docker_image_name: httpd:latest
+#
+svc_sidero_haproxy_config_serve_ip: 172.16.20.62
+svc_sidero_haproxy_config_serve_dir: "{{ docker_volumes_dir }}/svc_sidero_haproxy"
+svc_sidero_haproxy_config_serve_docker_volume_name: svc_sidero_haproxy_volume
+svc_sidero_haproxy_config_serve_docker_container_name: svc_sidero_haproxy
+svc_sidero_haproxy_config_serve_docker_image_name: haproxy:latest
